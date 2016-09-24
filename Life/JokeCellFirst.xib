@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="JokeCellFirst">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="99"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="标题" lineBreakMode="tailTruncation" numberOfLines="50" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aKN-Dy-ErA">
+                        <rect key="frame" x="8" y="30" width="304" height="61"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="发布时间" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gZh-Va-MsY">
+                        <rect key="frame" x="130" y="8" width="60" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="22" id="xXK-i9-97r"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="aKN-Dy-ErA" firstAttribute="top" secondItem="gZh-Va-MsY" secondAttribute="bottom" id="5C1-xF-PPU"/>
+                    <constraint firstItem="gZh-Va-MsY" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="900-uK-ODt"/>
+                    <constraint firstItem="aKN-Dy-ErA" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="CLH-zP-AKF"/>
+                    <constraint firstItem="aKN-Dy-ErA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="GHy-H3-LWA"/>
+                    <constraint firstItem="aKN-Dy-ErA" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottomMargin" id="Hwb-WB-Usy"/>
+                    <constraint firstItem="gZh-Va-MsY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="l72-ki-Yw6"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <connections>
+                <outlet property="dateLabel" destination="gZh-Va-MsY" id="sy1-KX-BzZ"/>
+                <outlet property="titleLabel" destination="aKN-Dy-ErA" id="BO0-hy-ajK"/>
+            </connections>
+            <point key="canvasLocation" x="415" y="217"/>
+        </tableViewCell>
+    </objects>
+</document>

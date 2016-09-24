@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MusicVC">
+            <connections>
+                <outlet property="cancelButton" destination="z7y-eH-fGr" id="Kba-tU-p2S"/>
+                <outlet property="scrollView" destination="06d-gv-6fg" id="uEB-at-rDe"/>
+                <outlet property="searchbar" destination="fkV-dS-m6i" id="ETD-nO-u5Y"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="06d-gv-6fg">
+                    <rect key="frame" x="0.0" y="84" width="320" height="484"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </scrollView>
+                <searchBar contentMode="redraw" placeholder="查询歌手或者歌名" translatesAutoresizingMaskIntoConstraints="NO" id="fkV-dS-m6i">
+                    <rect key="frame" x="0.0" y="40" width="320" height="44"/>
+                    <textInputTraits key="textInputTraits"/>
+                </searchBar>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z7y-eH-fGr">
+                    <rect key="frame" x="290" y="40" width="30" height="44"/>
+                    <color key="backgroundColor" red="0.74117647060000003" green="0.74117647060000003" blue="0.76470588240000004" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="30" id="EyO-M6-g4c"/>
+                        <constraint firstAttribute="height" constant="44" id="h2f-cY-hh2"/>
+                    </constraints>
+                    <state key="normal" title="取消"/>
+                    <connections>
+                        <action selector="cancel:" destination="-1" eventType="touchUpInside" id="0aE-3p-ilB"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="fkV-dS-m6i" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="40" id="3Ov-MF-SHj"/>
+                <constraint firstAttribute="trailing" secondItem="fkV-dS-m6i" secondAttribute="trailing" id="3Pz-2g-CEg"/>
+                <constraint firstItem="fkV-dS-m6i" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4Wl-E0-p2f"/>
+                <constraint firstAttribute="trailing" secondItem="06d-gv-6fg" secondAttribute="trailing" id="JgL-BU-0wK"/>
+                <constraint firstItem="06d-gv-6fg" firstAttribute="top" secondItem="fkV-dS-m6i" secondAttribute="bottom" id="Xn8-i6-SgY"/>
+                <constraint firstAttribute="trailing" secondItem="z7y-eH-fGr" secondAttribute="trailing" id="Z1X-F1-Zwh"/>
+                <constraint firstItem="06d-gv-6fg" firstAttribute="top" secondItem="fkV-dS-m6i" secondAttribute="bottom" id="g9I-Hr-Grr"/>
+                <constraint firstItem="06d-gv-6fg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="ike-Wj-vgo"/>
+                <constraint firstAttribute="bottom" secondItem="06d-gv-6fg" secondAttribute="bottom" id="wv5-5p-xX1"/>
+                <constraint firstItem="z7y-eH-fGr" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="40" id="y4p-Rf-dpD"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <point key="canvasLocation" x="271" y="141"/>
+        </view>
+    </objects>
+</document>
