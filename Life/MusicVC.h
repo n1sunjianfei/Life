@@ -15,7 +15,8 @@
 
 @property(nonatomic,strong) PlaylistVC *playlistVC;
 @property(nonatomic,copy) NSArray *singgerArr;
+@property(nonatomic,copy) NSArray *singgerIDArr;
+
 @property(nonatomic,copy) NSArray *songListArr;
 @property(nonatomic,copy) NSArray *colorsArr;
-@property(nonatomic,copy) NSArray *singgerIDArr;
 @end

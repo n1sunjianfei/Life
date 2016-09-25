@@ -32,20 +32,20 @@
 -(NSArray*)colorsArr{
     if (!_colorsArr) {
         _colorsArr=[[NSArray alloc]initWithObjects:
-                    [UIColor colorWithRed:250/255.0 green:235/255.0 blue:215/255.0 alpha:1.0],
-                    [UIColor colorWithRed:210/255.0 green:255/255.0 blue:255/255.0 alpha:1.0],
-                    [UIColor colorWithRed:255/255.0 green:222/255.0 blue:173/255.0 alpha:1.0],
-                    [UIColor colorWithRed:135/255.0 green:38/255.0 blue:87/255.0 alpha:1.0],
-                    [UIColor colorWithRed:61/255.0 green:89/255.0 blue:171/255.0 alpha:1.0],
-                    [UIColor colorWithRed:218/255.0 green:165/255.0 blue:105/255.0 alpha:1.0],
-                    [UIColor colorWithRed:65/255.0 green:105/255.0 blue:225/255.0 alpha:1.0],
-                    [UIColor colorWithRed:135/255.0 green:206/255.0 blue:235/255.0 alpha:1.0],
-                    [UIColor colorWithRed:0/255.0 green:255/255.0 blue:0/255.0 alpha:1.0],
-                    [UIColor colorWithRed:46/255.0 green:139/255.0 blue:87/255.0 alpha:1.0],
+        [UIColor colorWithRed:250/255.0 green:235/255.0 blue:215/255.0 alpha:1.0],
+        [UIColor colorWithRed:210/255.0 green:255/255.0 blue:255/255.0 alpha:1.0],
+        [UIColor colorWithRed:255/255.0 green:222/255.0 blue:173/255.0 alpha:1.0],
+        [UIColor colorWithRed:135/255.0 green:38/255.0 blue:87/255.0 alpha:1.0],
+        [UIColor colorWithRed:61/255.0 green:89/255.0 blue:171/255.0 alpha:1.0],
+        [UIColor colorWithRed:218/255.0 green:165/255.0 blue:105/255.0 alpha:1.0],
+        [UIColor colorWithRed:65/255.0 green:105/255.0 blue:225/255.0 alpha:1.0],
+        [UIColor colorWithRed:135/255.0 green:206/255.0 blue:235/255.0 alpha:1.0],
+        [UIColor colorWithRed:0/255.0 green:255/255.0 blue:0/255.0 alpha:1.0],
+        [UIColor colorWithRed:46/255.0 green:139/255.0 blue:87/255.0 alpha:1.0],
 
-                    nil];
-    }
-    return _colorsArr;
+    nil];
+}
+return _colorsArr;
 }
 -(NSArray*)songListArr{
     if (!_songListArr) {
@@ -135,65 +135,22 @@
 /*http://tingapi.ting.baidu.com/v1/restserver/ting*/
 //获取歌手的歌曲
 - (IBAction)Player:(UIButton *)sender {
-  //  NSString *searchStr=[@"薛之谦" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.artist.getSongList&tinguid=%@&limits=20&use_cluster=1&order=2",self.singgerIDArr[sender.tag]];
-    NSString *urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    //method=baidu.ting.billboard.billList&type=1&size=10&offset=0
-    NSLog(@"%@",urlStr);
-    
-    NSURL *url=[NSURL URLWithString:urlStr];
-    NSURLRequest *request=[NSURLRequest requestWithURL:url];
-    
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new ] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-      //  NSDictionary *datadic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-        if (data) {
-            NSDictionary *dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-         //   NSDictionary *songDic=[dic valueForKey:@"song"];
-           // NSLog(@"%@",songDic);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.playlistVC=[[PlaylistVC alloc]init];
-                self.playlistVC.dic=dic;
-                self.playlistVC.title=sender.titleLabel.text;
-             //   [self.playlistVC loadSongInfo];
-                [self.navigationController pushViewController:self.playlistVC animated:YES];
-            });
-        }
-        if (connectionError) {
-            NSLog(@"%@",connectionError);
-        }
-    }];
+
+  
+    [self pushWithTitle:sender.titleLabel.text andType:nil andSingerId:self.singgerIDArr[sender.tag]];
+
+}
+-(void)pushWithTitle:(NSString*)title andType:(NSString*)type andSingerId:(NSString*)singerId{
+    self.playlistVC=[[PlaylistVC alloc]init];
+    self.playlistVC.title=title;
+    self.playlistVC.singerId=singerId;
+    self.playlistVC.type=type;
+    [self.navigationController pushViewController:self.playlistVC animated:YES];
 }
 //获取榜单歌曲
 -(void)getList:(UIButton*)sender{
-    NSString *baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=%@&size=20&offset=0",[self.songListArr[sender.tag] valueForKey:@"value"]];
-    NSString *urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    //method=baidu.ting.billboard.billList&type=1&size=10&offset=0
-    NSLog(@"%@",urlStr);
-    
-    NSURL *url=[NSURL URLWithString:urlStr];
-    NSURLRequest *request=[NSURLRequest requestWithURL:url];
-    
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new ] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-        //  NSDictionary *datadic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-        if (data) {
-            NSDictionary *dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-           // NSDictionary *songList=[dic valueForKey:@"song_list"];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.playlistVC=[[PlaylistVC alloc]init];
-                self.playlistVC.dic=dic;
-                self.playlistVC.title=sender.titleLabel.text;
-             //   [self.playlistVC loadSongInfo];
-                [self.navigationController pushViewController:self.playlistVC animated:YES];
-            });
-          //  NSDictionary *songDic=[dic valueForKey:@"song"];
-           //  NSLog(@"%@",dic);
-        }
-        if (connectionError) {
-            NSLog(@"%@",connectionError);
-        }
-    }];
+
+    [self pushWithTitle:sender.titleLabel.text andType:[self.songListArr[sender.tag] valueForKey:@"value"] andSingerId:nil];
 }
 - (IBAction)cancel:(UIButton *)sender {
     [self.searchbar resignFirstResponder];
@@ -209,43 +166,10 @@
 }
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
     self.cancelButton.hidden=YES;
-    
     [searchBar resignFirstResponder];
-    
-    NSString *baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.search.catalogSug&query=%@",searchBar.text];
-    NSString *urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    //method=baidu.ting.billboard.billList&type=1&size=10&offset=0
-    NSLog(@"%@",urlStr);
-    
-    NSURL *url=[NSURL URLWithString:urlStr];
-    NSURLRequest *request=[NSURLRequest requestWithURL:url];
-    
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new ] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-        
-        if (data) {
-            NSDictionary *dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-          //  NSDictionary *songDic=[dic valueForKey:@"song"];
-           //  NSLog(@"搜索的歌曲信息。。。。%@",dic);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.playlistVC=[[PlaylistVC alloc]init];
-                self.playlistVC.dic=dic;
-                self.playlistVC.title=searchBar.text;
-                searchBar.text=nil;
-             //   [self.playlistVC loadSongInfo];
-                [self.navigationController pushViewController:self.playlistVC animated:YES];
-            });
-        }
-        if (connectionError) {
-            NSLog(@"%@",connectionError);
-        }
-    }];
-    
+    [self pushWithTitle:searchBar.text andType:nil andSingerId:nil];
 }
 
--(void)push{
-    
-}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
