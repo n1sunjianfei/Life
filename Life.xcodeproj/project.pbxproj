@@ -42,8 +42,6 @@
 		CE65E7711D93CD7500C868CF /* up.png in Resources */ = {isa = PBXBuildFile; fileRef = CE65E76C1D93CD7500C868CF /* up.png */; };
 		CE65E7751D93D42400C868CF /* tab_play.png in Resources */ = {isa = PBXBuildFile; fileRef = CE65E7741D93D42400C868CF /* tab_play.png */; };
 		CE65E7781D94328800C868CF /* SixButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CE65E7771D94328800C868CF /* SixButton.m */; };
-		CE717A3C1D957F29003EA707 /* JF_LoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE717A391D957F29003EA707 /* JF_LoadingView.m */; };
-		CE717A3D1D957F29003EA707 /* login.png in Resources */ = {isa = PBXBuildFile; fileRef = CE717A3A1D957F29003EA707 /* login.png */; };
 		CE717A441D959185003EA707 /* 捧腹网.png in Resources */ = {isa = PBXBuildFile; fileRef = CE717A3F1D959185003EA707 /* 捧腹网.png */; };
 		CE717A461D959185003EA707 /* 快乐麻花.png in Resources */ = {isa = PBXBuildFile; fileRef = CE717A411D959185003EA707 /* 快乐麻花.png */; };
 		CE717A471D959185003EA707 /* 暴走漫画.png in Resources */ = {isa = PBXBuildFile; fileRef = CE717A421D959185003EA707 /* 暴走漫画.png */; };
@@ -194,9 +192,6 @@
 		CE65E7741D93D42400C868CF /* tab_play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tab_play.png; sourceTree = "<group>"; };
 		CE65E7761D94328800C868CF /* SixButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SixButton.h; sourceTree = "<group>"; };
 		CE65E7771D94328800C868CF /* SixButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SixButton.m; sourceTree = "<group>"; };
-		CE717A381D957F29003EA707 /* JF_LoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JF_LoadingView.h; sourceTree = "<group>"; };
-		CE717A391D957F29003EA707 /* JF_LoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JF_LoadingView.m; sourceTree = "<group>"; };
-		CE717A3A1D957F29003EA707 /* login.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = login.png; sourceTree = "<group>"; };
 		CE717A3F1D959185003EA707 /* 捧腹网.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "捧腹网.png"; sourceTree = "<group>"; };
 		CE717A411D959185003EA707 /* 快乐麻花.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "快乐麻花.png"; sourceTree = "<group>"; };
 		CE717A421D959185003EA707 /* 暴走漫画.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "暴走漫画.png"; sourceTree = "<group>"; };
@@ -443,9 +438,6 @@
 		CE717A3B1D957F29003EA707 /* LoadingView */ = {
 			isa = PBXGroup;
 			children = (
-				CE717A381D957F29003EA707 /* JF_LoadingView.h */,
-				CE717A391D957F29003EA707 /* JF_LoadingView.m */,
-				CE717A3A1D957F29003EA707 /* login.png */,
 			);
 			name = LoadingView;
 			path = "../../iOS开发/自定义类/菊花旋转/菊花旋转";
@@ -872,7 +864,6 @@
 				CE65E76D1D93CD7500C868CF /* list.png in Resources */,
 				CE9A9C401D92479D0046E87A /* MusicVC.xib in Resources */,
 				CE9A9C091D9242DF0046E87A /* Assets.xcassets in Resources */,
-				CE717A3D1D957F29003EA707 /* login.png in Resources */,
 				CE61C61F1D966C0300ED26BF /* circleg.png in Resources */,
 				CEC2D3AB1D93045B00890542 /* small.jpg in Resources */,
 				CE61C6171D9642F200ED26BF /* MJRefresh.bundle in Resources */,
@@ -938,7 +929,6 @@
 				CE61C6121D9642F200ED26BF /* MJRefreshBackNormalFooter.m in Sources */,
 				CE61C6141D9642F200ED26BF /* MJRefreshGifHeader.m in Sources */,
 				CE61C6131D9642F200ED26BF /* MJRefreshBackStateFooter.m in Sources */,
-				CE717A3C1D957F29003EA707 /* JF_LoadingView.m in Sources */,
 				CEDDB0C01D952D0F00144DB3 /* RediousButtons.m in Sources */,
 				CE9A9C821D92734E0046E87A /* WeatherView.m in Sources */,
 				CE61C61B1D9642F200ED26BF /* UIView+MJExtension.m in Sources */,
