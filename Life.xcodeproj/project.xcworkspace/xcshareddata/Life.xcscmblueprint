@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "6251FAEF93286307213FDF16BCE73E5BC7F9709B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6251FAEF93286307213FDF16BCE73E5BC7F9709B" : 0,
+    "F7F47779E3A355975B9D55020F20725B09CDA352" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "3CD331BF-ED1E-4CBA-9EFE-ABF23CF685D5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6251FAEF93286307213FDF16BCE73E5BC7F9709B" : "Life\/",
+    "F7F47779E3A355975B9D55020F20725B09CDA352" : "..\/iOS%E5%BC%80%E5%8F%91\/%E9%A1%B9%E7%9B%AE\/%E7%9C%8B%E7%9C%8B\/ios_1_3"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Life",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Life.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/n1sunjianfei\/Life.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6251FAEF93286307213FDF16BCE73E5BC7F9709B"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/git.zdoz.net:6789\/ios_1_3.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "F7F47779E3A355975B9D55020F20725B09CDA352"
+    }
+  ]
+}
