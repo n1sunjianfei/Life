@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -14,14 +15,42 @@
                         <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="2Sh-EL-yAK">
+                                <rect key="frame" x="-4" y="0.0" width="328" height="568"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to Life" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zab-QS-KnU">
+                                <rect key="frame" x="75" y="120" width="170" height="21"/>
+                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="170" id="RZI-Xs-8bm"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Chalkduster" family="Chalkduster" pointSize="16"/>
+                                <color key="textColor" red="0.47213855908189512" green="0.43689061483291086" blue="0.88583905831099197" alpha="0.9188999613003096" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="2Sh-EL-yAK" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="topMargin" id="7Sj-EY-9qq"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="2Sh-EL-yAK" secondAttribute="trailing" constant="-20" id="EZB-hD-nKZ"/>
+                            <constraint firstItem="Zab-QS-KnU" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="100" id="cb0-xv-ZC1"/>
+                            <constraint firstItem="2Sh-EL-yAK" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="-20" id="lQP-Fv-XB9"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="2Sh-EL-yAK" secondAttribute="bottom" id="tWi-ai-1Sm"/>
+                            <constraint firstItem="Zab-QS-KnU" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="unV-f8-WNe"/>
+                        </constraints>
                     </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="568"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="158" y="357"/>
+            <point key="canvasLocation" x="-308" y="461"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="bg.jpg" width="320" height="480"/>
+    </resources>
 </document>
