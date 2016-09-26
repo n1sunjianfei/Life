@@ -58,13 +58,13 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
     //
-    if(self.iSplay){
+    if (self.playerItem!=nil) {
         [self addAnimation];
-    }
-    if (self.iSplay) {
         self.tabBarController.tabBar.hidden=YES;
 
     }
+   
+    
 }
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -274,7 +274,13 @@
  */
 -(void)applicationDidBecomeActive:(NSNotification*)notification{
     NSLog(@"enter foreword");
-    
+    if(self.iSplay){
+        [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
+        
+    }else{
+        [self.playButton setImage:[UIImage imageNamed:@"pause.png"] forState:UIControlStateNormal];
+        
+    }
 }
 /*
  进入后台
@@ -300,7 +306,10 @@
     long long tt=sender.value*total;
     CMTime cmtime=CMTimeMake(tt, 1);
     [self.player pause];
+    [self.playButton setImage:[UIImage imageNamed:@"pause.png"] forState:UIControlStateNormal];
     [self.playerItem seekToTime:cmtime completionHandler:^(BOOL finished) {
+        self.iSplay=YES;
+        [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
         [self.player play];
         //NSLog(@"finish");
     }];
@@ -409,6 +418,7 @@
         [self.player pause];
         [sender setImage:[UIImage imageNamed:@"pause.png"] forState:UIControlStateNormal];
         self.iSplay=!self.iSplay;
+        self.tabBarController.tabBar.hidden=YES;
     }else{
         [self.player play];
         self.iSplay=!self.iSplay;
@@ -430,7 +440,7 @@
         switch (receivedEvent.subtype) { // 得到事件类型
                 
             case UIEventSubtypeRemoteControlTogglePlayPause: // 暂停 ios6
-                [self.player pause]; // 调用你所在项目的暂停按钮的响应方法 下面的也是如此
+                [self playMusic:nil]; // 调用你所在项目的暂停按钮的响应方法 下面的也是如此
                 break;
                 
             case UIEventSubtypeRemoteControlPreviousTrack:  // 上一首
@@ -444,10 +454,12 @@
                 
             case UIEventSubtypeRemoteControlPlay: //播放
                 [self playMusic:nil];
+                NSLog(@"play");
                 break;
                 
             case UIEventSubtypeRemoteControlPause: // 暂停 ios7
                 [self playMusic:nil];
+                NSLog(@"pause");
                 break;
                 
             default:
