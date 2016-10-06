@@ -43,14 +43,14 @@
 }
 -(void)show{
     if (self.isPlayViewShow) {
-        PlayView *play=[PlayView shareWeatherView];
+        PlayView *play=[PlayView sharePlayView];
         [play removeFromSuperview];
         self.isPlayViewShow=NO;
         self.tabBarController.tabBar.hidden=NO;
         self.navigationItem.rightBarButtonItem.title=@"显示";
         [self animateOut];
     }else{
-        PlayView *play=[PlayView shareWeatherView];
+        PlayView *play=[PlayView sharePlayView];
         [self.view addSubview:play];
         self.isPlayViewShow=YES;
         self.tabBarController.tabBar.hidden=YES;
@@ -98,5 +98,42 @@
     animation.type = kCATransitionMoveIn;
     animation.subtype = kCATransitionFromLeft;
     [self.view.layer addAnimation:animation forKey:@"animation"];
+}
+
+//重写父类方法，接受外部事件的处理
+- (void) remoteControlReceivedWithEvent: (UIEvent *) receivedEvent {
+    PlayView *play=[PlayView sharePlayView];
+    NSLog(@"remote");
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        
+        switch (receivedEvent.subtype) { // 得到事件类型
+                
+            case UIEventSubtypeRemoteControlTogglePlayPause: // 暂停 ios6
+                [play playMusic:nil]; // 调用你所在项目的暂停按钮的响应方法 下面的也是如此
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:  // 上一首
+                
+                [play lastMusic:nil];
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack: // 下一首
+                [play nextMusic:nil];
+                break;
+                
+            case UIEventSubtypeRemoteControlPlay: //播放
+                [play playMusic:nil];
+                NSLog(@"play");
+                break;
+                
+            case UIEventSubtypeRemoteControlPause: // 暂停 ios7
+                [play playMusic:nil];
+                NSLog(@"pause");
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 @end

@@ -211,7 +211,7 @@
     NSLog(@"播放....%@",title);
    // [[NSNotificationCenter defaultCenter]postNotificationName:@"jumpToPlayVC" object:nil userInfo:self.dicTransport];
   //  self.tabBarController.selectedIndex=2;
-    PlayView *play=[PlayView shareWeatherView];
+    PlayView *play=[PlayView sharePlayView];
     [play reload:self.dicTransport];
     [self.view addSubview:play];
 }

@@ -10,7 +10,7 @@
 
 @implementation PlayView
 
-+(PlayView*)shareWeatherView{
++(PlayView*)sharePlayView{
     static PlayView *playView=nil;
     if (playView==nil) {
         
@@ -173,16 +173,6 @@
     [self analysisIrc];
 }
 
-/*
- 视图已经消失;
- */
-//
-//-(void)viewDidDisappear:(BOOL)animated{
-//    [super viewDidDisappear:animated];
-//    [self.playListTableView removeFromSuperview];
-//    _isPlayListShow=NO;
-//    // NSLog(@"dissappear");
-//}
 /*
  更新时间labe和slider
  */
@@ -411,41 +401,41 @@
     
 }
 
-//重写父类方法，接受外部事件的处理
-- (void) remoteControlReceivedWithEvent: (UIEvent *) receivedEvent {
-    NSLog(@"remote");
-    if (receivedEvent.type == UIEventTypeRemoteControl) {
-        
-        switch (receivedEvent.subtype) { // 得到事件类型
-                
-            case UIEventSubtypeRemoteControlTogglePlayPause: // 暂停 ios6
-                [self playMusic:nil]; // 调用你所在项目的暂停按钮的响应方法 下面的也是如此
-                break;
-                
-            case UIEventSubtypeRemoteControlPreviousTrack:  // 上一首
-                
-                [self lastMusic:nil];
-                break;
-                
-            case UIEventSubtypeRemoteControlNextTrack: // 下一首
-                [self nextMusic:nil];
-                break;
-                
-            case UIEventSubtypeRemoteControlPlay: //播放
-                [self playMusic:nil];
-                NSLog(@"play");
-                break;
-                
-            case UIEventSubtypeRemoteControlPause: // 暂停 ios7
-                [self playMusic:nil];
-                NSLog(@"pause");
-                break;
-                
-            default:
-                break;
-        }
-    }
-}
+////重写父类方法，接受外部事件的处理
+//- (void) remoteControlReceivedWithEvent: (UIEvent *) receivedEvent {
+//    NSLog(@"remote");
+//    if (receivedEvent.type == UIEventTypeRemoteControl) {
+//        
+//        switch (receivedEvent.subtype) { // 得到事件类型
+//                
+//            case UIEventSubtypeRemoteControlTogglePlayPause: // 暂停 ios6
+//                [self playMusic:nil]; // 调用你所在项目的暂停按钮的响应方法 下面的也是如此
+//                break;
+//                
+//            case UIEventSubtypeRemoteControlPreviousTrack:  // 上一首
+//                
+//                [self lastMusic:nil];
+//                break;
+//                
+//            case UIEventSubtypeRemoteControlNextTrack: // 下一首
+//                [self nextMusic:nil];
+//                break;
+//                
+//            case UIEventSubtypeRemoteControlPlay: //播放
+//                [self playMusic:nil];
+//                NSLog(@"play");
+//                break;
+//                
+//            case UIEventSubtypeRemoteControlPause: // 暂停 ios7
+//                [self playMusic:nil];
+//                NSLog(@"pause");
+//                break;
+//                
+//            default:
+//                break;
+//        }
+//    }
+//}
 //Now Playing Center可以在锁屏界面展示音乐的信息，也达到增强用户体验的作用。
 ////传递信息到锁屏状态下 此方法在播放歌曲与切换歌曲时调用即可
 

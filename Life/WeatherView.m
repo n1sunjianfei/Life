@@ -42,7 +42,7 @@
     return self;
 }
 -(void)show{
-    PlayView *play=[PlayView shareWeatherView];
+    PlayView *play=[PlayView sharePlayView];
    
     [self.superview addSubview:play];
 }

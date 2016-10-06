@@ -19,7 +19,7 @@
 #import "Constant.h"
 
 @interface PlayView : UIView<PlaylistTableViewDelegate>
-+(PlayView*)shareWeatherView;
++(PlayView*)sharePlayView;
 -(instancetype)init;
 -(void)reload:(NSMutableDictionary *)dic;
 
