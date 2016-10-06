@@ -14,7 +14,6 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w3T-A0-k0t">
                     <rect key="frame" x="0.0" y="25" width="320" height="451"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <state key="normal" title="Button"/>
                     <connections>
                         <action selector="hidePlaylistTableView:" destination="mUj-l5-FSj" eventType="touchUpInside" id="tey-Ie-nMF"/>
                     </connections>
