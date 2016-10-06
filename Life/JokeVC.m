@@ -302,6 +302,10 @@
                 
             }
             [self performSelectorOnMainThread:@selector(reloadUI) withObject:nil waitUntilDone:YES];
+        }else{
+            NSLog(@"网络不可用...");
+          [self performSelectorOnMainThread:@selector(reloadUI) withObject:nil waitUntilDone:YES];
+
         }
     }];
 }
@@ -366,13 +370,14 @@
     right.direction=UISwipeGestureRecognizerDirectionRight;
     [self.webContainer addGestureRecognizer:right];
     //动画效果
-    CATransition *animation = [CATransition animation];
-    animation.delegate = self;
-    animation.duration = 0.3;
-    animation.timingFunction = UIViewAnimationCurveEaseInOut;
-    animation.type = kCATransitionMoveIn;
-    animation.subtype = kCATransitionFromRight;
-    [self.view.layer addAnimation:animation forKey:@"animation"];
+//    CATransition *animation = [CATransition animation];
+//    animation.delegate = self;
+//    animation.duration = 0.3;
+//    animation.timingFunction = UIViewAnimationCurveEaseInOut;
+//    animation.type = kCATransitionMoveIn;
+//    animation.subtype = kCATransitionFromRight;
+//    [self.view.layer addAnimation:animation forKey:@"animation"];
+    [self animateIn];
     //
     UIWebView *web=[[UIWebView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-30)];
     web.backgroundColor=BACKGROUND_COLOR;
@@ -395,13 +400,14 @@
     // [sender.superview removeFromSuperview];
     [self.webContainer removeFromSuperview];
     //动画效果
-    CATransition *animation = [CATransition animation];
-    animation.delegate = self;
-    animation.duration = 0.3;
-    animation.timingFunction = UIViewAnimationCurveEaseInOut;
-    animation.type = kCATransitionMoveIn;
-    animation.subtype = kCATransitionFromLeft;
-    [self.view.layer addAnimation:animation forKey:@"animation"];
+//    CATransition *animation = [CATransition animation];
+//    animation.delegate = self;
+//    animation.duration = 0.3;
+//    animation.timingFunction = UIViewAnimationCurveEaseInOut;
+//    animation.type = kCATransitionMoveIn;
+//    animation.subtype = kCATransitionFromLeft;
+//    [self.view.layer addAnimation:animation forKey:@"animation"];
+    [self animateOut];
     self.tabBarController.tabBar.hidden=NO;
     
 }
@@ -423,13 +429,14 @@
     right.direction=UISwipeGestureRecognizerDirectionRight;
     [self.webContainer addGestureRecognizer:right];
     //动画效果
-    CATransition *animation = [CATransition animation];
-    animation.delegate = self;
-    animation.duration = 0.3;
-    animation.timingFunction = UIViewAnimationCurveEaseInOut;
-    animation.type = kCATransitionMoveIn;
-    animation.subtype = kCATransitionFromRight;
-    [self.view.layer addAnimation:animation forKey:@"animation"];
+//    CATransition *animation = [CATransition animation];
+//    animation.delegate = self;
+//    animation.duration = 0.3;
+//    animation.timingFunction = UIViewAnimationCurveEaseInOut;
+//    animation.type = kCATransitionMoveIn;
+//    animation.subtype = kCATransitionFromRight;
+//    [self.view.layer addAnimation:animation forKey:@"animation"];
+    [self animateIn];
     //
     UIButton *backBtn=[UIButton buttonWithType:UIButtonTypeCustom];
     [backBtn setImage:[UIImage imageNamed:@"cha.png"] forState:UIControlStateNormal];

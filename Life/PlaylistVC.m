@@ -32,13 +32,13 @@
     if (!_dataSource) {
         _dataSource=[[NSMutableArray alloc]init];
     }
-    
     return _dataSource;
 }
 /*
  获取歌曲列表信息
  */
 -(void)loadSongInfo{
+    [self.loading stop];
     //datasource添加数据
     if (self.type.length==0&&self.singerId.length==0) {//查询歌曲
         self.isSongId=YES;
@@ -109,20 +109,21 @@
         }
          ];
     }
-    
 }
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     self.tabBarController.tabBar.hidden=YES;
-    
+    self.weather.hidden=YES;
 }
-
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:YES];
+    self.weather.hidden=NO;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     //
     if (!(self.type.length==0&&self.singerId==0)) {
         self.mainTableView.mj_footer=[MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
-           
                 self.offset+=20;
                 //NSLog(@"footer数据数量：%ld",self.dataSource.count);
                 [self netWorkWithUrl:[self createUrlstring] andTitle:nil];
@@ -130,8 +131,7 @@
     }
     self.mainTableView.backgroundColor=BACKGROUND_COLOR;
     [self netWorkWithUrl:[self createUrlstring] andTitle:self.title];
-
-    self.playViewController=[[PlayViewController alloc]init];
+  //  self.playViewController=[[PlayViewController alloc]init];
 }
 -(NSString*)createUrlstring{
     
@@ -160,7 +160,7 @@
 -(void)netWorkWithUrl:(NSString*)urlStr andTitle:(NSString*)title{
     NSURL *url=[NSURL URLWithString:urlStr];
     NSURLRequest *request=[NSURLRequest requestWithURL:url];
-    
+    [self.loading begin];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new ] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
         
         if (data) {
@@ -208,9 +208,12 @@
     NSString *index=[NSString stringWithFormat:@"%ld",(long)indexPath.row];
     NSString *title=self.title;
     self.dicTransport=[NSMutableDictionary dictionaryWithObjectsAndKeys:self.songinfoArr,@"array", index,@"index",title,@"title",self.tabBarController.selectedIndex,@"lastvc",nil];
-    NSLog(@"跳转%@",title);
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"jumpToPlayVC" object:nil userInfo:self.dicTransport];
-    self.tabBarController.selectedIndex=2;
+    NSLog(@"播放....%@",title);
+   // [[NSNotificationCenter defaultCenter]postNotificationName:@"jumpToPlayVC" object:nil userInfo:self.dicTransport];
+  //  self.tabBarController.selectedIndex=2;
+    PlayView *play=[PlayView shareWeatherView];
+    [play reload:self.dicTransport];
+    [self.view addSubview:play];
 }
 
 @end

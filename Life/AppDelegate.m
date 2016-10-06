@@ -55,21 +55,9 @@
     nav4.tabBarItem.selectedImage=[[UIImage imageNamed:@"jokes_s.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     nav4.tabBarItem.image=[[UIImage imageNamed:@"jokes.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     //nav1.tabBarItem.badgeValue=@"love";
-    /*
-     
-     */
-    PlayViewController *playVC=[[PlayViewController alloc]init];
-    [playVC addNotification];
-   // playVC.view.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"bgm.jpg"]];
-     playVC.view.backgroundColor=[UIColor colorWithRed:41.0/255 green:36.0/255 blue:33.0/255 alpha:1.0];
-    UINavigationController *nav5=[[UINavigationController alloc]initWithRootViewController:playVC];
+
     
-    nav5.tabBarItem.title=@"播放";
-    nav5.tabBarItem.selectedImage=[[UIImage imageNamed:@"tab_play.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    nav5.tabBarItem.image=[[UIImage imageNamed:@"tab_play.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    //nav1.tabBarItem.badgeValue=@"love";
-    
-    rootTab.viewControllers=@[nav1,nav2,nav5,nav3,nav4];
+    rootTab.viewControllers=@[nav1,nav2,nav3,nav4];
     self.window.rootViewController=rootTab;
     [self.window makeKeyAndVisible];
     

@@ -47,8 +47,6 @@
 		CE61C61E1D966C0300ED26BF /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = CE61C61C1D966C0300ED26BF /* circle.png */; };
 		CE61C61F1D966C0300ED26BF /* circleg.png in Resources */ = {isa = PBXBuildFile; fileRef = CE61C61D1D966C0300ED26BF /* circleg.png */; };
 		CE61C6271D9695EF00ED26BF /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CE61C6261D9695EF00ED26BF /* icon.png */; };
-		CE65E74D1D936C5D00C868CF /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE65E7491D936C5D00C868CF /* PlayViewController.m */; };
-		CE65E74E1D936C5D00C868CF /* PlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE65E74A1D936C5D00C868CF /* PlayViewController.xib */; };
 		CE65E74F1D936C5D00C868CF /* PlaylistTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE65E74C1D936C5D00C868CF /* PlaylistTableView.m */; };
 		CE65E7511D9395F000C868CF /* tem.png in Resources */ = {isa = PBXBuildFile; fileRef = CE65E7501D9395F000C868CF /* tem.png */; };
 		CE65E7631D9396CC00C868CF /* playlist@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CE65E7621D9396CC00C868CF /* playlist@2x.png */; };
@@ -117,6 +115,8 @@
 		CEDDB0C81D954CBA00144DB3 /* JokeCellSecond.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDDB0C31D954CBA00144DB3 /* JokeCellSecond.m */; };
 		CEDDB0C91D954CBA00144DB3 /* JokeCellFirst.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEDDB0C51D954CBA00144DB3 /* JokeCellFirst.xib */; };
 		CEDDB0CA1D954CBA00144DB3 /* JokeCellFirst.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDDB0C61D954CBA00144DB3 /* JokeCellFirst.m */; };
+		CEF340091DA62BC1004C5A68 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF340071DA62BC1004C5A68 /* PlayView.m */; };
+		CEF3400A1DA62BC1004C5A68 /* PlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF340081DA62BC1004C5A68 /* PlayView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -214,9 +214,6 @@
 		CE61C61C1D966C0300ED26BF /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
 		CE61C61D1D966C0300ED26BF /* circleg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circleg.png; sourceTree = "<group>"; };
 		CE61C6261D9695EF00ED26BF /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		CE65E7481D936C5D00C868CF /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
-		CE65E7491D936C5D00C868CF /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
-		CE65E74A1D936C5D00C868CF /* PlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayViewController.xib; sourceTree = "<group>"; };
 		CE65E74B1D936C5D00C868CF /* PlaylistTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistTableView.h; sourceTree = "<group>"; };
 		CE65E74C1D936C5D00C868CF /* PlaylistTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistTableView.m; sourceTree = "<group>"; };
 		CE65E7501D9395F000C868CF /* tem.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tem.png; sourceTree = "<group>"; };
@@ -307,6 +304,9 @@
 		CEDDB0C41D954CBA00144DB3 /* JokeCellFirst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JokeCellFirst.h; sourceTree = "<group>"; };
 		CEDDB0C51D954CBA00144DB3 /* JokeCellFirst.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JokeCellFirst.xib; sourceTree = "<group>"; };
 		CEDDB0C61D954CBA00144DB3 /* JokeCellFirst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JokeCellFirst.m; sourceTree = "<group>"; };
+		CEF340061DA62BC1004C5A68 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
+		CEF340071DA62BC1004C5A68 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
+		CEF340081DA62BC1004C5A68 /* PlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -481,9 +481,9 @@
 		CE65E7471D936C4F00C868CF /* Play */ = {
 			isa = PBXGroup;
 			children = (
-				CE65E7481D936C5D00C868CF /* PlayViewController.h */,
-				CE65E7491D936C5D00C868CF /* PlayViewController.m */,
-				CE65E74A1D936C5D00C868CF /* PlayViewController.xib */,
+				CEF340061DA62BC1004C5A68 /* PlayView.h */,
+				CEF340071DA62BC1004C5A68 /* PlayView.m */,
+				CEF340081DA62BC1004C5A68 /* PlayView.xib */,
 				CE65E74B1D936C5D00C868CF /* PlaylistTableView.h */,
 				CE65E74C1D936C5D00C868CF /* PlaylistTableView.m */,
 			);
@@ -863,6 +863,7 @@
 				CE717A4E1D95931D003EA707 /* 笑话集.png in Resources */,
 				CE9A9C701D925FE70046E87A /* search.png in Resources */,
 				CE717A441D959185003EA707 /* 捧腹网.png in Resources */,
+				CEF3400A1DA62BC1004C5A68 /* PlayView.xib in Resources */,
 				CE9A9C741D9264C40046E87A /* news_s.png in Resources */,
 				CEDDB0C71D954CBA00144DB3 /* JokeCellSecond.xib in Resources */,
 				CE9A9C761D9265250046E87A /* news.png in Resources */,
@@ -876,7 +877,6 @@
 				CE61C6171D9642F200ED26BF /* MJRefresh.bundle in Resources */,
 				CE9A9C4F1D9248280046E87A /* JokeVC.xib in Resources */,
 				CE61C61E1D966C0300ED26BF /* circle.png in Resources */,
-				CE65E74E1D936C5D00C868CF /* PlayViewController.xib in Resources */,
 				CE9A9C861D92D2370046E87A /* 1.jpg in Resources */,
 				CE9A9CA31D92F0BB0046E87A /* PlaylistVC.xib in Resources */,
 				CE9A9C9B1D92ED330046E87A /* bg@1x.jpg in Resources */,
@@ -913,7 +913,6 @@
 				CEDDB0CA1D954CBA00144DB3 /* JokeCellFirst.m in Sources */,
 				CE0990DD1D978B520005545C /* UIButton+WebCache.m in Sources */,
 				CE65E74F1D936C5D00C868CF /* PlaylistTableView.m in Sources */,
-				CE65E74D1D936C5D00C868CF /* PlayViewController.m in Sources */,
 				CE0990DB1D978B520005545C /* SDWebImageManager.m in Sources */,
 				CE61C60E1D9642F200ED26BF /* MJRefreshAutoGifFooter.m in Sources */,
 				CE61C60A1D9642F200ED26BF /* MJRefreshBackFooter.m in Sources */,
@@ -950,6 +949,7 @@
 				CE0990DE1D978B520005545C /* UIImage+GIF.m in Sources */,
 				CE61C61A1D9642F200ED26BF /* UIScrollView+MJRefresh.m in Sources */,
 				CE0990D61D978B520005545C /* SDImageCache.m in Sources */,
+				CEF340091DA62BC1004C5A68 /* PlayView.m in Sources */,
 				CE0990D51D978B520005545C /* NSData+ImageContentType.m in Sources */,
 				CE61C60D1D9642F200ED26BF /* MJRefreshHeader.m in Sources */,
 				CE0990DC1D978B520005545C /* SDWebImagePrefetcher.m in Sources */,
@@ -1088,10 +1088,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Life/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = sjf.Life;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -1099,10 +1102,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Life/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = sjf.Life;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

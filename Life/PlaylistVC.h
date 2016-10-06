@@ -6,16 +6,18 @@
 //  Copyright © 2016年 sjf. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "BaseVC.h"
 #import "UIImageView+WebCache.h"
-#import "PlayViewController.h"
+#import "PlayView.h"
 #import "MJRefresh.h"
-@interface PlaylistVC : UIViewController<UITableViewDataSource,UITableViewDelegate>
+
+@interface PlaylistVC : BaseVC<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *mainTableView;
 @property(nonatomic,copy) NSDictionary *dic;
 @property(nonatomic,copy) NSMutableArray *dataSource;
 @property(nonatomic,copy) NSMutableArray *songinfoArr;
-@property(nonatomic,strong) PlayViewController *playViewController;
+//@property(nonatomic,strong) PlayViewController *playViewController;
+@property(nonatomic,strong) PlayView *playView;
 
 @property(nonatomic,retain) NSMutableDictionary *dicTransport;//传给下一个对象的
 

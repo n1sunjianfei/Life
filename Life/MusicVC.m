@@ -70,6 +70,8 @@ return _colorsArr;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithTitle:@"展示" style:UIBarButtonItemStylePlain target:self action:@selector(show)];
+    self.navigationController.navigationItem.rightBarButtonItem=rightBtn;
     self.title=@"听音乐";
    // self.view.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.jpg"]];
     self.view.backgroundColor=BACKGROUND_COLOR;

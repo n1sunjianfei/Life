@@ -25,8 +25,6 @@
     [self clickButton:nil];
     //
     self.view.backgroundColor=BACKGROUND_COLOR;
-
-    
 }
 
 -(void)loadSeg{
@@ -44,6 +42,8 @@
 
 #pragma mark-click SEG
 -(void)clickButton:(UIButton *)sender{
+    //
+    [self.loading begin];
     //搜索相关标题
     NSLog(@"新闻分类标题%@",[self.buttonTitleArr objectAtIndex:sender.tag]);
     NSString *second=[NSString stringWithFormat:@"type=%@&key=b991d0c58b3b82f193c7d7bf07ed2dfd",self.typeArr[sender.tag]];
@@ -52,11 +52,20 @@
     NSURL *url=[NSURL URLWithString:urlStr];
     [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:url] queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
        // NSLog(@"%@",data);
-        NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-        NSDictionary *result=[dic valueForKey:@"result"];
-        self.dataSource=[result valueForKey:@"data"];
-        [self.mainTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        if (data) {
+            NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            NSDictionary *result=[dic valueForKey:@"result"];
+            self.dataSource=[result valueForKey:@"data"];
+            [self performSelectorOnMainThread:@selector(reloadTableView) withObject:nil waitUntilDone:YES];
+        }else{
+            NSLog(@"网络不可用好像...");
+        }
+      
     }];
+}
+-(void)reloadTableView{
+    [self.mainTableView reloadData];
+    [self.loading stop];
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (self.dataSource) {

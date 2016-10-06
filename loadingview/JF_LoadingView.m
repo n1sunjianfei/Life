@@ -35,7 +35,7 @@
     login=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 60, 60)];
     login.layer.masksToBounds=YES;
     login.layer.cornerRadius=login.frame.size.width/2;
-    login.center=CGPointMake(JF_LoadingViewWidth/2, JF_LoadingViewHeight/2);
+    login.center=CGPointMake(JF_LoadingViewWidth/2, JF_LoadingViewHeight/2-40);
     login.image=[UIImage imageNamed:@"login.png"];
     [self addSubview:login];
     //标题；
@@ -59,7 +59,7 @@
         self.hidden=YES;
         login=nil;
         loadingTitleLabel=nil;
-        [login removeFromSuperview];
+        //[login removeFromSuperview];
        // [self removeFromSuperview];
     }];
     }

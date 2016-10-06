@@ -1,13 +1,12 @@
 //
-//  PlayViewController.h
-//  MusicTestDemo
+//  PlayView.h
+//  Life
 //
-//  Created by 孙建飞 on 16/4/7.
+//  Created by 孙建飞 on 16/10/6.
 //  Copyright © 2016年 sjf. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -19,8 +18,10 @@
 
 #import "Constant.h"
 
-
-@interface PlayViewController : UIViewController<PlaylistTableViewDelegate>
+@interface PlayView : UIView<PlaylistTableViewDelegate>
++(PlayView*)shareWeatherView;
+-(instancetype)init;
+-(void)reload:(NSMutableDictionary *)dic;
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic,assign)float startTime;
@@ -33,7 +34,7 @@
 //
 
 @property(nonatomic,assign) BOOL iSplay;
- @property(nonatomic,assign)  BOOL isPlayListShow;//播放列表是否展示;
+@property(nonatomic,assign)  BOOL isPlayListShow;//播放列表是否展示;
 
 @property(nonatomic,retain) NSMutableArray *playlistArr;
 
@@ -50,5 +51,25 @@
 @property(nonatomic,copy) NSMutableArray *stringArr;
 @property(nonatomic,assign) int lastID;
 -(void)addNotification;
+-(void)addAnimation;
+
+
+@property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *totalTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UISlider *slider;
+@property (weak, nonatomic) IBOutlet UIButton *playButton;
+@property (weak, nonatomic) IBOutlet UIView *downView;
+- (IBAction)hidePlaylistTableView:(UIButton *)sender;
+
+- (IBAction)sliderValueChange:(id)sender;
+- (IBAction)showPlayList:(UIButton *)sender;
+- (IBAction)lastMusic:(UIButton*)sender;
+- (IBAction)playMusic:(UIButton *)sender;
+- (IBAction)nextMusic:(UIButton *)sender;
+- (IBAction)changePlayOrder:(UIButton *)sender;
+@property (weak, nonatomic) IBOutlet UILabel *lrcLabel;
+
 
 @end

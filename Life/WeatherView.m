@@ -32,8 +32,19 @@
         [self addSubview:self.cityLabel];
         [self addSubview:self.weatherLale];
 
+        //
+        UIButton *showPlayView=[UIButton buttonWithType:UIButtonTypeCustom];
+        [showPlayView addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
+        showPlayView.frame=CGRectMake(SCREEN_WIDTH-50, 5, 30, 30);
+        showPlayView.titleLabel.text=@"显示";
+        [self addSubview:showPlayView];
     }
     return self;
+}
+-(void)show{
+    PlayView *play=[PlayView shareWeatherView];
+   
+    [self.superview addSubview:play];
 }
 /*http://api.map.baidu.com/telematics/v3/weather?location=嘉兴&output=json&ak=5slgyqGDENN7Sy7pw29IUvrZ*/
 /*
