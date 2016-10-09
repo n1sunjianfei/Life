@@ -29,12 +29,27 @@
         main.frame=frame;
         self = (PlayView*)main;
         self.backgroundColor=BACKGROUND_COLOR;
-        NSLog(@"playViewController");
+//        NSLog(@"init");
 
-            self.last=@"00:00";
-            self.currentNum=-1;
-            //title
-            UILabel *label=[[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 60)];
+        self.last=@"00:00";
+        self.currentNum=-1;
+        
+        self.pageNum=0;
+        //title
+        self.lrcLabel.textColor=Blue_Text_COLOR;
+        self.currentTimeLabel.textColor=Blue_Text_COLOR;
+        self.totalTimeLabel.textColor=Blue_Text_COLOR;
+        
+        //
+        [self.slider setMinimumTrackImage:[UIImage imageNamed:@"slider_blue.png"] forState:UIControlStateNormal];
+        [self.slider setMaximumTrackImage:[UIImage imageNamed:@"slider_bg.png"] forState:UIControlStateNormal];
+        [self.slider addTarget:self action:@selector(sliderValueChange:) forControlEvents:UIControlEventValueChanged];
+        
+        //
+        //更改进度条高度
+        self.progressView.transform = CGAffineTransformMakeScale(1.0f,3.0f);
+        //
+        UILabel *label=[[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 60)];
             label.text=@"❤随悦动";
             label.textAlignment=1;
             label.font=[UIFont systemFontOfSize:20];
@@ -53,7 +68,7 @@
  添加通知(在appdelegate中就已经调用此方法了）
  */
 -(void)addNotification{
-    NSLog(@"add");
+//    NSLog(@"addNotify");
    // [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reload:) name:@"jumpToPlayVC" object:nil];
     /*
      给AVPlayerItem添加播放完成通知
@@ -82,7 +97,7 @@
  */
 -(void)reload:(NSMutableDictionary *)dic{
     if (self.playlistArr==NULL) {
-        NSLog(@"初始化数组");
+//        NSLog(@"初始化数组");
         self.playlistArr=[[NSMutableArray alloc]init];
     }
     self.playListTableView=[[PlaylistTableView alloc]initWithFrame:CGRectMake(0, self.imageView.frame.origin.y+self.imageView.frame.size.height, SCREEN_WIDTH-200, 0) style:UITableViewStyleGrouped];
@@ -93,13 +108,8 @@
     self.lastID=[[dic valueForKey:@"lastv"] intValue];
     NSString *title=[dic valueForKey:@"title"];
     
-    //NSLog(@"%@",title);
-    //
-//   UIBarButtonItem *back=[[UIBarButtonItem alloc]initWithTitle:[NSString stringWithFormat:@"<%@",title] style:UIBarButtonItemStylePlain target:self action:@selector(backToLast)];
-    //self.navigationItem.leftBarButtonItem=back;
     
     int i=[index intValue];
-    //NSLog(@"reload %d",i);
     
     self.playlistArr=[NSMutableArray arrayWithArray:arr];
     //更新播放列表;
@@ -112,67 +122,243 @@
     if (!(i==self.currentNum&&title==self.lastTitle)) {
         self.lastTitle=title;
         self.currentNum=i;
-        NSLog(@"reload %d,title:%@",self.currentNum,self.lastTitle);
+//        NSLog(@"reload %d,title:%@",self.currentNum,self.lastTitle);
         
         [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
-        [self configNowPlayingCenter];
-        
-        [self setPlayerAndPlayMusic];
-    }
-}
-//-(void)backToLast{
-//   // self.tabBarController.selectedIndex=self.lastID;
-//}
-/*
- 协议方法
- */
--(void)PlaySelectedMusic:(int)index{
-    NSLog(@"sssle");
-    if (self.currentNum!=index) {
-        self.currentNum=index;
+       // [self configNowPlayingCenter];
         
         [self setPlayerAndPlayMusic];
     }
     
+}
+
+/*
+ 协议方法
+ */
+-(void)PlaySelectedMusic:(int)index{
+    if (self.currentNum!=index) {
+        self.currentNum=index;
+        [self setPlayerAndPlayMusic];
+    }
+    
+}
+-(void)removePlaylistTable{
+    [self hidePlaylistTableView:nil];
 }
 /*
  设置时间label
  */
 
 -(void)setTimeLabel{
-    NSLog(@"设置时间");
-    NSLog(@"%ld",self.playlistArr.count);
+//    NSLog(@"设置时间");
+//    NSLog(@"%ld",self.playlistArr.count);
     NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
     NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
     NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
     self.totalTime=[[bitrate valueForKey:@"file_duration"] intValue];
-    NSLog(@"%ld",(long)self.totalTime);
+//    NSLog(@"%ld",(long)self.totalTime);
     self.currentTimeLabel.text=@"00:00";
     self.totalTimeLabel.text=[NSString stringWithFormat:@"%.2ld:%.2ld",self.totalTime/60,self.totalTime%60];
-    NSLog(@"%@",self.totalTimeLabel.text);
+//    NSLog(@"%@",self.totalTimeLabel.text);
     self.nameLabel.text=[songInfo valueForKey:@"title"];
     
-    [self.imageView sd_setImageWithURL:[NSURL URLWithString:[songInfo valueForKey:@"pic_big"]] placeholderImage:[UIImage imageNamed:@""]];
+    [self.imageView sd_setImageWithURL:[NSURL URLWithString:[songInfo valueForKey:@"pic_big"]] placeholderImage:[UIImage imageNamed:@"tem.png"]];
 }
 /*
  初始化播放器然后播放;
  */
 -(void)setPlayerAndPlayMusic{
-    [self.timer invalidate];
-    self.timer=nil;
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTimeAndSliderValue) userInfo:nil repeats:YES];
-    [self setMediaPlayer];
-    [self.player play];
-    [self configNowPlayingCenter];
+
     
+    [self.timer invalidate];
+    self.progressView.progress=0;
+    [self setMediaPlayer];
+}
+/*
+ 初始化播放器;
+ */
+- (void)setMediaPlayer{
+//    NSLog(@"s");
+    if (self.playerItem!=nil) {
+        [self removeObserverFromPlayerItem:self.playerItem];
+        self.playerItem=nil;
+    }
+    [self.player seekToTime:CMTimeMakeWithSeconds(self.startTime, 1000)];//设置播放位置,1000 为帧率
+    if (_playlistArr.count>0) {
+//        NSLog(@"初始化播放器");
+        /*method=baidu.ting.song.play&songid=877578*/
+        
+        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+        NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
+        
+        NSString *urlStr=[bitrate valueForKey:@"file_link"];
+//        NSLog(@"%@",urlStr);
+//        NSLog(@"m1");
+        //
+          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        self.isSetPlayer=YES;
+        NSURL *url=[NSURL URLWithString:urlStr];
+        _playerItem=[AVPlayerItem playerItemWithURL:url];
+        _player = [AVPlayer playerWithPlayerItem:_playerItem];
+        _player.volume=1;
+//        NSLog(@"m2");
+
+        [self performSelectorOnMainThread:@selector(finishSetPlayer) withObject:nil waitUntilDone:YES];
+          });
+    }
+}
+-(void)finishSetPlayer{
+//    NSLog(@"m3");
+    self.isSetPlayer=NO;
+    [self addObserverToPlayerItem:self.playerItem];
+    [self.player play];
     [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
     self.iSplay=YES;
     [self setupNotification];//活跃度监听
-    [self setTimeLabel];
     [self configNowPlayingCenter];
-    [self analysisIrc];
+    [self getIrc];
+    [self addProgressObserver];//进度监听
+    self.timer=nil;
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTimeAndSliderValue) userInfo:nil repeats:YES];
 }
 
+//获取歌词文件
+-(void)getIrc{
+
+    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+    NSString *lrcStr=[songInfo valueForKey:@"lrclink"];
+
+    if (lrcStr.length==0) {//没有歌词文件
+        [self ana];
+    }else{
+    if ([NSData dataWithContentsOfFile:[self getLocalFilePath]]) {
+        NSLog(@"本地歌词");
+        self.isGetLrc=YES;
+        [self ana];
+    }else{
+        NSURL *url=[NSURL URLWithString:lrcStr];
+        NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+        request.HTTPMethod=@"GET";
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+            if (data) {
+                [data writeToFile:[self getLocalFilePath] atomically:YES];
+                NSLog(@"歌词准备完毕");
+                self.isGetLrc=YES;
+                [self performSelectorOnMainThread:@selector(ana) withObject:nil waitUntilDone:YES];
+            }
+        }];
+    }
+    }
+}
+//解析歌词
+-(void)ana{
+
+    
+    NSString *lyc = [NSString stringWithContentsOfFile:[self getLocalFilePath] encoding:NSUTF8StringEncoding error:nil];
+//    NSLog(@"歌词----%@",lyc);
+    NSArray *lycArray = [lyc componentsSeparatedByString:@"\n"];
+    NSMutableDictionary *temdic=[[NSMutableDictionary alloc]init];
+    if (lycArray.count==1||lycArray.count==0) {//没有歌词的音乐
+//        self.lrcLabel.text=@"该歌曲没有歌词,请欣赏！";
+    }
+    for (int i = 0; i < [lycArray count]; i++) {
+        
+        NSString *lineString = [lycArray objectAtIndex:i];
+        
+        NSArray *lineArray = [lineString componentsSeparatedByString:@"]"];
+
+        if ([lineArray[0] length] > 8) {
+            
+            NSString *str1 = [lineString substringWithRange:NSMakeRange(3, 1)];
+            
+            NSString *str2 = [lineString substringWithRange:NSMakeRange(6, 1)];
+            
+            if ([str1 isEqualToString:@":"] && [str2 isEqualToString:@"."]) {
+                
+                for (int i = 0; i < lineArray.count - 1; i++) {
+                    
+                    NSString *lrcString = [lineArray objectAtIndex:lineArray.count - 1];
+                    if ([[lineArray objectAtIndex:i] length]>8) {
+                        
+                        //分割区间求歌词时间
+                        NSString *timeString =[[lineArray objectAtIndex:i] substringWithRange:NSMakeRange(1, 5)];
+                        [temdic setValue:lrcString forKey:timeString];
+                    }
+
+                    
+                    //   NSLog(@"词：%@",lrcString);
+                    //   NSLog(@"时：%@",timeString);
+                    // NSLog(@"%lu",(unsigned long)self.timeArr.count);
+                    // NSLog(@"%lu",(unsigned long)self.stringArr.count);
+                }
+            }
+        }
+    }
+//    NSLog(@"ana");
+    //开启子线程，查询是否正在滚动，滚动结束时添加新的lrcTable;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        int i=0;
+        do {
+            [NSThread sleepForTimeInterval:0.1];
+            NSLog(@"是否正在滚动查询：%d次  %d",i+1,self.isLrcTableScrolling);
+
+            //lrctable不滚动时添加新的
+            if (self.isLrcTableScrolling==NO&&self.isSetPlayer==NO) {
+                NSLog(@"滚动结束");
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [self addLrcTableWith:temdic];
+                    self.currentRowIndex=0;
+                    self.nextButton.enabled=YES;
+                    self.upButton.enabled=YES;
+                });
+                break;
+            }
+            i++;
+        } while (i<1000);
+    });
+    
+   // [self performSelector:@selector(addLrcTableWith:) withObject:temdic afterDelay:0.3];
+  //  [self addLrcTableWith:temdic];
+}
+-(void)addLrcTableWith:(NSMutableDictionary*)temdic{
+
+    NSLog(@"addLrcTable");
+    _timeArr=[[NSMutableArray alloc]init];
+    _stringArr=[[NSMutableArray alloc]init];
+    [self.lrcTable removeFromSuperview];
+    self.lrcTable=nil;
+    
+    //排序
+    NSArray *arr=[temdic allKeys];
+    if (arr.count>10) {
+        NSArray *sortedArr=[arr sortedArrayUsingComparator:^NSComparisonResult(id   obj1, id   obj2) {
+            return [obj1 compare:obj2];
+        }];
+        [self.timeArr addObjectsFromArray:sortedArr];
+        for (int i=0; i<self.timeArr.count; i++) {
+            //  NSLog(@"%@",self.timeArr[i]);
+            if ([temdic valueForKey:self.timeArr[i]]!=nil) {
+                [self.stringArr addObject:[temdic valueForKey:self.timeArr[i]]];
+            }
+        }
+        
+        if (self.pageNum==1&&self.stringArr.count>0) {
+            NSLog(@"contain");
+            [self CreateTable];
+            [self addSubview:self.lrcTable];
+            if ([self.subviews containsObject:self.playListTableView]) {
+                [self bringSubviewToFront:self.hidePlayListButton];
+                [self bringSubviewToFront:self.playListTableView];
+            }
+        }
+    }
+//    NSLog(@"m6");
+    self.isGetLrc=NO;
+}
 /*
  更新时间labe和slider
  */
@@ -186,49 +372,122 @@
         //   NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
         int total=[[bitrate valueForKey:@"file_duration"] intValue];
         self.slider.value=(float)cur/(float)total;
-        if (self.timeArr) {
+       // NSLog(@"lrc...");
+        if (self.timeArr.count>0) {
             //NSLog(@"歌词存在");
+          static  int index=0;
             
             //NSLog(@"%@",lrcString);
             if ([self.timeArr containsObject:self.currentTimeLabel.text]) {
-                //  NSLog(@"更新");
-                int index=(int)[self.timeArr indexOfObject:self.currentTimeLabel.text];
+                index=(int)[self.timeArr indexOfObject:self.currentTimeLabel.text];
                 //内容不为空时传值
                 if (![[self.stringArr objectAtIndex:index] isEqual:@""]) {
-                    NSLog(@"%@",[self.stringArr objectAtIndex:index]);
+                   // NSLog(@"%@",[self.stringArr objectAtIndex:index]);
                     self.lrcLabel.text=[self.stringArr objectAtIndex:index];
+
                 }
             }
+            if (self.lrcTable!=nil&&self.stringArr.count>0) {
+               
+                if (self.isGetLrc!=YES) {
+                    self.currentRowIndex=index+5;
+                    NSIndexPath *indexPath=[NSIndexPath indexPathForRow:self.currentRowIndex inSection:0];
+                    [self.lrcTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+                    
+                    [self.lrcTable reloadData];
+                }
+            }
+        }else{//没有歌词文件
+            self.lrcLabel.text=@"该歌曲没有歌词,请欣赏！";
         }
-        
     }
-    
+}
+/*
+ 进度监听
+ */
+#pragma mark - KVO
+- (void)addProgressObserver{
+    AVPlayerItem *playerItem = self.player.currentItem;
+    //这里设置每秒执行一次
+    __weak __typeof(self) weakself = self;
+    self.timeObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1.0, 1.0) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        float current = CMTimeGetSeconds(time);
+        _currentTime=current;
+        //float t=CMTimeGetSeconds(playerItem.)
+        
+        float total = CMTimeGetSeconds(playerItem.duration);
+        _totalTime=total;
+        //NSLog(@"当前已经播放%f",current);
+        weakself.currentTime = current;
+        if (current) {
+            
+           // [weakself setTime:(int)current withTotal:total];
+        }
+    }];
 }
 
 /*
- 初始化播放器;
+给AVPlayerItem添加监控
+*/
+- (void)addObserverToPlayerItem:(AVPlayerItem *)playerItem{
+    //监控状态属性，注意AVPlayer也有一个status属性，通过监控它的status也可以获得播放状态
+    [playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    //监控网络加载情况属性
+    [playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+    //监听播放的区域缓存是否为空
+    [playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
+    //缓存可以播放的时候调用
+    [playerItem addObserver:self forKeyPath:@"playbackLikelyToKeepUp" options:NSKeyValueObservingOptionNew context:nil];
+}
+/*
+ 给AVPlayerItem移除监控
  */
-- (void)setMediaPlayer{
-    [self.player seekToTime:CMTimeMakeWithSeconds(self.startTime, 1000)];//设置播放位置,1000 为帧率
-    if (_playlistArr.count>0) {
-        NSLog(@"初始化播放器");
-        /*method=baidu.ting.song.play&songid=877578*/
-        
-        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-        NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
-        NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
-        
-        NSString *urlStr=[bitrate valueForKey:@"file_link"];
-        NSLog(@"%@",urlStr);
-        NSURL *url=[NSURL URLWithString:urlStr];
-        _playerItem=[AVPlayerItem playerItemWithURL:url];
-        _player = [AVPlayer playerWithPlayerItem:_playerItem];
-        _player.volume=1;
-        
-        NSURL *lrcUrl=[songInfo valueForKey:@"lrclink"];
+- (void)removeObserverFromPlayerItem:(AVPlayerItem *)playerItem{
+    
+    [playerItem removeObserver:self forKeyPath:@"status"];
+    [playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+    [playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+    [playerItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp"];
+    
+}
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    
+    AVPlayerItem *playerItem = object;
+    if ([keyPath isEqualToString:@"status"]) {
+        AVPlayerStatus status= [[change objectForKey:@"new"] intValue];
+        if(status == AVPlayerStatusReadyToPlay){
+            //  self.totalTime = CMTimeGetSeconds(playerItem.duration);
+            CGFloat total=CMTimeGetSeconds(playerItem.duration);
+            self.totalTime=total;
+//            NSLog(@"开始播放,音频总长度:%.2f",total);
+            [self setTimeLabel];
+            if (self.player.rate==1) {
+                [_player play];
+            }
+        }else if(status == AVPlayerStatusUnknown){
+            NSLog(@"%@",@"AVPlayerStatusUnknown");
+        }else if (status == AVPlayerStatusFailed){
+            NSLog(@"%@",@"AVPlayerStatusFailed");
+        }
+    }else if([keyPath isEqualToString:@"loadedTimeRanges"]){
+        NSArray *array = playerItem.loadedTimeRanges;
+        CMTimeRange timeRange = [array.firstObject CMTimeRangeValue];//本次缓冲时间范围
+        float startSeconds = CMTimeGetSeconds(timeRange.start);
+        float durationSeconds = CMTimeGetSeconds(timeRange.duration);
+        NSTimeInterval totalBuffer = startSeconds + durationSeconds;//缓冲总长度
+//        NSLog(@"缓冲：%f,total=%ld",totalBuffer,(long)self.totalTime);
+        if (totalBuffer>0&&self.isGetLrc==NO) {
+        }
+        //更新progreView进度；
+        if (self.totalTime!=0) {
+            self.progressView.progress=totalBuffer/self.totalTime;
+        }
+        //
+        if (self.currentTime < (startSeconds + durationSeconds + 8)&&self.player.rate==1) {
+            [_player play];
+        }
     }
 }
-
 /*
  添加通知中心;
  */
@@ -248,7 +507,6 @@
         
     }else{
         [self.playButton setImage:[UIImage imageNamed:@"pause.png"] forState:UIControlStateNormal];
-        
     }
 }
 /*
@@ -290,8 +548,9 @@
     
     if (_isPlayListShow) {
         [UIView animateWithDuration:0.5 animations:^{
-            _playListTableView.frame=CGRectMake(SCREEN_WIDTH,100, SCREEN_WIDTH-105,SCREEN_HEIGHT-100-self.downView.frame.size.height);
+            _playListTableView.frame=CGRectMake(0,SCREEN_HEIGHT, SCREEN_WIDTH,SCREEN_HEIGHT-200);
         } completion:^(BOOL finished) {
+            [self sendSubviewToBack:self.hidePlayListButton];
             [self.playListTableView removeFromSuperview];
             _isPlayListShow=NO;
         }];
@@ -307,28 +566,30 @@
         NSLog(@"播放列表为空");
         return;
     }
-    if (_isPlayListShow) {
-        [UIView animateWithDuration:0.5 animations:^{
-            _playListTableView.frame=CGRectMake(SCREEN_WIDTH,100, SCREEN_WIDTH-105,SCREEN_HEIGHT-100-self.downView.frame.size.height );
+    if (_isPlayListShow) {//out
+        [UIView animateWithDuration:0.3 animations:^{
+            _playListTableView.frame=CGRectMake(0,SCREEN_HEIGHT, SCREEN_WIDTH,SCREEN_HEIGHT-200-64);
             //self.playListTableView.alpha=1;
         } completion:^(BOOL finished) {
             [self.playListTableView removeFromSuperview];
+            [self sendSubviewToBack:self.hidePlayListButton];
+
             _isPlayListShow=NO;
         }];
-        
-    }else{
-        
+    }else{//in
+        [self bringSubviewToFront:self.hidePlayListButton];
         [_playListTableView removeFromSuperview];
-        _playListTableView=[[PlaylistTableView alloc]initWithFrame:CGRectMake(0, self.imageView.frame.origin.y+self.imageView.frame.size.height, SCREEN_WIDTH, 0) style:UITableViewStyleGrouped];
-        _playListTableView.frame=CGRectMake(SCREEN_WIDTH,100, SCREEN_WIDTH-105,SCREEN_HEIGHT-100-self.downView.frame.size.height );
+        _playListTableView=[[PlaylistTableView alloc]initWithFrame:CGRectMake(0, self.imageView.frame.origin.y+self.imageView.frame.size.height, SCREEN_WIDTH, 0) style:UITableViewStylePlain];
+        _playListTableView.layer.masksToBounds=YES;
+        _playListTableView.layer.cornerRadius=5;
+        _playListTableView.frame=CGRectMake(0,SCREEN_HEIGHT, SCREEN_WIDTH,SCREEN_HEIGHT-200-64);
         _playListTableView.delegate_playlistTableView=self;
-        NSLog(@"%ld",_playListTableView.dataArr.count);
         _playListTableView.dataArr=self.playlistArr;
         [_playListTableView reloadData];
         [self addSubview:_playListTableView];
         
-        [UIView animateWithDuration:0.5 animations:^{
-            _playListTableView.frame=CGRectMake(100, 100, SCREEN_WIDTH-105, SCREEN_HEIGHT-100-self.downView.frame.size.height);
+        [UIView animateWithDuration:0.3 animations:^{
+            _playListTableView.frame=CGRectMake(0, 200, SCREEN_WIDTH, SCREEN_HEIGHT-200-64);
             self.playListTableView.alpha=1;
         } completion:^(BOOL finished) {
             _isPlayListShow=YES;
@@ -339,7 +600,7 @@
 /*
  上一首
  */
-- (IBAction)lastMusic:(id)sender {
+- (IBAction)lastMusic:(UIButton*)sender {
     
     NSLog(@"%d",self.currentNum);
     
@@ -353,10 +614,10 @@
     }else{
         self.currentNum--;
     }
-    //  NSIndexPath *selectPath=[NSIndexPath indexPathForRow:self.currentNum inSection:0];
-    
-    //  [self.playListTableView selectRowAtIndexPath:selectPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+    self.nextButton.enabled=NO;
+    self.upButton.enabled=NO;
     [self setPlayerAndPlayMusic];
+
 }
 /*
  下一首
@@ -374,8 +635,11 @@
     }else{
         self.currentNum++;
     }
-    
+
+    self.nextButton.enabled=NO;
+    self.upButton.enabled=NO;
     [self setPlayerAndPlayMusic];
+
 }
 
 /*
@@ -401,46 +665,12 @@
     
 }
 
-////重写父类方法，接受外部事件的处理
-//- (void) remoteControlReceivedWithEvent: (UIEvent *) receivedEvent {
-//    NSLog(@"remote");
-//    if (receivedEvent.type == UIEventTypeRemoteControl) {
-//        
-//        switch (receivedEvent.subtype) { // 得到事件类型
-//                
-//            case UIEventSubtypeRemoteControlTogglePlayPause: // 暂停 ios6
-//                [self playMusic:nil]; // 调用你所在项目的暂停按钮的响应方法 下面的也是如此
-//                break;
-//                
-//            case UIEventSubtypeRemoteControlPreviousTrack:  // 上一首
-//                
-//                [self lastMusic:nil];
-//                break;
-//                
-//            case UIEventSubtypeRemoteControlNextTrack: // 下一首
-//                [self nextMusic:nil];
-//                break;
-//                
-//            case UIEventSubtypeRemoteControlPlay: //播放
-//                [self playMusic:nil];
-//                NSLog(@"play");
-//                break;
-//                
-//            case UIEventSubtypeRemoteControlPause: // 暂停 ios7
-//                [self playMusic:nil];
-//                NSLog(@"pause");
-//                break;
-//                
-//            default:
-//                break;
-//        }
-//    }
-//}
+
 //Now Playing Center可以在锁屏界面展示音乐的信息，也达到增强用户体验的作用。
 ////传递信息到锁屏状态下 此方法在播放歌曲与切换歌曲时调用即可
 
 - (void)configNowPlayingCenter {
-    NSLog(@"锁屏设置");
+//    NSLog(@"锁屏设置");
     // BASE_INFO_FUN(@"配置NowPlayingCenter");
     NSMutableDictionary * info = [NSMutableDictionary dictionary];
     //音乐的标题
@@ -454,90 +684,33 @@
     [info setObject:@(1) forKey:MPNowPlayingInfoPropertyPlaybackRate];
     //音乐的总时间
     [info setObject:@(self.totalTime) forKey:MPMediaItemPropertyPlaybackDuration];
-    //音乐的封面
-    MPMediaItemArtwork * artwork = [[MPMediaItemArtwork alloc] initWithImage:[UIImage imageNamed:@"0.jpg"]];
-    [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
-    //完成设置
-    [[MPNowPlayingInfoCenter defaultCenter]setNowPlayingInfo:info];
-}
-
-//解析歌词文件
--(void)analysisIrc{
-    _timeArr=[[NSMutableArray alloc]init];
-    _stringArr=[[NSMutableArray alloc]init];
     
-    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
-    NSString *lrcStr=[songInfo valueForKey:@"lrclink"];
-    if ([NSData dataWithContentsOfFile:[self getLocalFilePath]]) {
-        NSLog(@"本地歌词");
-        self.lrcLabel.text=self.nameLabel.text;
-        [self ana];
-    }else{
-        [NSURLConnection sendAsynchronousRequest:[NSMutableURLRequest requestWithURL:[NSURL URLWithString:lrcStr]] queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-            if (data) {
-                [data writeToFile:[self getLocalFilePath] atomically:YES];
-                NSLog(@"歌词准备完毕");
-                [self performSelectorOnMainThread:@selector(ana) withObject:nil waitUntilDone:YES];
+
+        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+        NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+
+        NSURL *url=[NSURL URLWithString:[songInfo valueForKey:@"pic_big"]];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *data=[NSData dataWithContentsOfURL:url];
+        
+        UIImage *image=[UIImage imageWithData:data];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (image) {
+                //音乐的封面
+                MPMediaItemArtwork * artwork = [[MPMediaItemArtwork alloc] initWithImage:image];
+                [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
+                //完成设置
+                [[MPNowPlayingInfoCenter defaultCenter]setNowPlayingInfo:info];
             }
             
-        }];
-    }
-}
--(void)ana{
-    self.lrcLabel.text=self.nameLabel.text;
-    
-    //   NSString *lynicPath = [[NSBundle mainBundle] pathForResource:@"vivalavida" ofType:@"lrc"];
-    NSString *lyc = [NSString stringWithContentsOfFile:[self getLocalFilePath] encoding:NSUTF8StringEncoding error:nil];
-    //   NSLog(@"歌词----%@",lyc);
-    
-    
-    
-    NSArray *lycArray = [lyc componentsSeparatedByString:@"\n"];
-    for (int i = 0; i < [lycArray count]; i++) {
-        
-        NSString *lineString = [lycArray objectAtIndex:i];
-        
-        NSArray *lineArray = [lineString componentsSeparatedByString:@"]"];
-        
-        if ([lineArray[0] length] > 8) {
-            
-            NSString *str1 = [lineString substringWithRange:NSMakeRange(3, 1)];
-            
-            NSString *str2 = [lineString substringWithRange:NSMakeRange(6, 1)];
-            
-            if ([str1 isEqualToString:@":"] && [str2 isEqualToString:@"."]) {
-                
-                for (int i = 0; i < lineArray.count - 1; i++) {
-                    
-                    NSString *lrcString = [lineArray objectAtIndex:lineArray.count - 1];
-                    
-                    //分割区间求歌词时间
-                    NSString *timeString =[[lineArray objectAtIndex:i] substringWithRange:NSMakeRange(1, 5)];
-                    //NSString *timeString = [self timeToSecond:[[lineArray objectAtIndex:i] substringWithRange:NSMakeRange(1, 5)]];
-                    //                    NSLog(@"词：%@",lrcString);
-                    //                    NSLog(@"时：%@",timeString);
-                    //
-                    [_timeArr addObject:timeString];
-                    [_stringArr addObject:lrcString];
-                    //                    NSLog(@"%lu",(unsigned long)self.timeArr.count);
-                    //                    NSLog(@"%lu",(unsigned long)self.stringArr.count);
-                }
-            }
-        }
-    }
+        });
+    });
 }
 
--(NSString*)timeToSecond:(NSString*)second{
-    
-    NSString *str=[NSString stringWithFormat:@"%d",[second substringWithRange:NSMakeRange(0,2)].intValue*60-[self.last substringWithRange:NSMakeRange(0, 2)].intValue*60+[second substringWithRange:NSMakeRange(3,2)].intValue-[self.last substringWithRange:NSMakeRange(3, 2)].intValue];
-    self.last=second;
-    //  NSLog(@"秒%@",str);
-    return str;
-}
-///*
-//获取文件路径
-//*/
+/*
+获取文件路径
+*/
 -(NSString *)getLocalFilePath{
     
     NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -546,9 +719,13 @@
     NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
     NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
     NSString *filepath=[NSString stringWithFormat:@"%@/%@-%@.lrc",path,[songInfo valueForKey:@"author"],[songInfo valueForKey:@"title"]];
-    NSLog(@"%@",filepath);
+//    NSLog(@"%@",filepath);
     return filepath;
 }
+
+/*
+ 专辑图片旋转动画
+ */
 -(void)addAnimation{
     //图片动画旋转
     CABasicAnimation* rotationAnimation;
@@ -566,6 +743,155 @@
     rotationAnimation.duration = 20;
     
     [self.imageView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+    
 }
 
+
+/*
+ 左右滑动响应
+ */
+- (IBAction)swipe:(UISwipeGestureRecognizer *)sender {
+    NSLog(@"swipe");
+    if (sender.direction==UISwipeGestureRecognizerDirectionLeft) {//左滑
+        if (self.pageNum<1) {
+            self.pageNum++;
+            self.pageControl.currentPage=self.pageNum;
+            if (self.stringArr.count>0) {
+                [self CreateTable];
+            }
+            [self addSubview:self.lrcTable];
+            [self animateInWith:self.lrcTable];
+            if ([self.subviews containsObject:self.playListTableView]) {
+                [self sendSubviewToBack:self.lrcTable];
+                [self sendSubviewToBack:self.imageView];
+                [self sendSubviewToBack:self.lrcLabel];
+                [self bringSubviewToFront:self.playListTableView];
+            }
+        }
+    }else{//右滑
+        if (self.pageNum==1) {
+            CGPoint center=self.lrcTable.center;
+            [UIView animateWithDuration:0.3 animations:^{
+                self.lrcTable.center=CGPointMake(SCREEN_WIDTH*1.5, center.y);
+            } completion:^(BOOL finished) {
+                [self.lrcTable removeFromSuperview];
+                self.pageNum--;
+                self.pageControl.currentPage=self.pageNum;
+            }];
+            
+            
+        }else if (self.pageNum==0) {
+            [self.delegate removeFromSuperView];
+        }
+    }
+}
+/*
+ 动画效果进入
+ */
+-(void)animateInWith:(UIView*)view{
+    //动画效果
+    CATransition *animation = [CATransition animation];
+    animation.delegate = self;
+    animation.duration = 0.3;
+    animation.timingFunction = UIViewAnimationCurveEaseInOut;
+    animation.type = kCATransitionMoveIn;
+    animation.subtype = kCATransitionFromRight;
+    [view.layer addAnimation:animation forKey:@"animation"];
+}
+/*
+ 动画效果退出
+ */
+-(void)animateOutWith:(UIView*)view{
+    //动画效果
+    CATransition *animation = [CATransition animation];
+    animation.delegate = self;
+    animation.duration = 0.3;
+    animation.timingFunction = UIViewAnimationCurveEaseInOut;
+    animation.type = kCATransitionMoveIn;
+    animation.subtype = kCATransitionFromLeft;
+    [view.layer addAnimation:animation forKey:@"animation"];
+}
+/*
+ *
+ *歌词TableView
+ *
+ */
+-(void)CreateTable{
+    self.lrcTable=nil;
+    self.lrcTable=[[UITableView alloc]initWithFrame:CGRectMake(0, 50, SCREEN_WIDTH, SCREEN_HEIGHT-50-90-64-30) style:UITableViewStylePlain];
+    self.lrcTable.backgroundColor=[UIColor clearColor];
+    self.lrcTable.allowsSelection=NO;
+    self.lrcTable.separatorStyle=UITableViewCellSeparatorStyleNone;
+    self.lrcTable.delegate=self;
+    self.lrcTable.dataSource=self;
+    
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 50;
+}
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return self.stringArr.count+10;
+}
+-(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if (cell==nil) {
+        cell=[[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell.textLabel.textAlignment=1;
+        cell.backgroundColor=[UIColor clearColor];
+        cell.textLabel.backgroundColor=BACKGROUND_COLOR;
+        cell.textLabel.alpha=0.8;
+        cell.textLabel.numberOfLines=2;
+        cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
+    }
+    if (indexPath.row<5) {
+        cell.textLabel.text=@"  ";
+    }else if (indexPath.row-5<self.stringArr.count) {
+        cell.textLabel.text=self.stringArr[indexPath.row-5];
+    }else {
+        cell.textLabel.text=@"  ";
+    }
+
+    if (cell.textLabel.text.length==0) {
+        cell.textLabel.text=@"......";
+    }else{
+        
+    }
+    if (indexPath.row==self.currentRowIndex) {
+        cell.textLabel.font=[UIFont systemFontOfSize:20];
+        cell.textLabel.textColor=Purple_Text_COLOR;
+        
+    }else{
+        cell.textLabel.font=[UIFont systemFontOfSize:15];
+
+        cell.textLabel.textColor=[UIColor grayColor];
+
+    }
+   // NSLog(@"cell");
+    return cell;
+}
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    self.isLrcTableScrolling=YES;
+//    NSLog(@"scolling");
+}
+
+-(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+//    NSLog(@"end");
+    self.isLrcTableScrolling=NO;
+
+}
+//-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+//    NSLog(@"手动停止滚动");
+//}
+//-(void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
+//    NSLog(@"end zooming");
+//}
+-(void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
+//    NSLog(@"begin 手动滚动");
+    self.isLrcTableScrolling=YES;
+}
+-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+//    NSLog(@"end 手动滚动");
+    self.isLrcTableScrolling=NO;
+}
 @end

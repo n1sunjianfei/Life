@@ -268,6 +268,7 @@
     NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
     request.cachePolicy=NSURLRequestReloadIgnoringCacheData;
     request.timeoutInterval=20;
+    request.HTTPMethod=@"POST";
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
         
         if (data) {

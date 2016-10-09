@@ -137,10 +137,9 @@ return _colorsArr;
 /*http://tingapi.ting.baidu.com/v1/restserver/ting*/
 //获取歌手的歌曲
 - (IBAction)Player:(UIButton *)sender {
-
-  
+   
     [self pushWithTitle:sender.titleLabel.text andType:nil andSingerId:self.singgerIDArr[sender.tag]];
-
+    
 }
 -(void)pushWithTitle:(NSString*)title andType:(NSString*)type andSingerId:(NSString*)singerId{
     self.playlistVC=[[PlaylistVC alloc]init];

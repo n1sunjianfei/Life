@@ -104,7 +104,8 @@
 //    NSLog(@"%s",[str UTF8String]);
     NSURL *url=[NSURL URLWithString:str];
     
-    NSURLRequest *request=[NSURLRequest requestWithURL:url];
+    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod=@"POST";
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
       NSDictionary *dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];

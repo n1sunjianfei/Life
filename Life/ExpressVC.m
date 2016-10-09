@@ -44,7 +44,9 @@
     [self.deliveryTextfield resignFirstResponder];
     NSString *urlStrl=[NSString stringWithFormat:@"http://q.kdpt.net/api?id=testkey&com=auto&nu=%@&show=json&order=desc",self.deliveryTextfield.text];
     NSURL *url=[NSURL URLWithString:urlStrl];
-    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:url] queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod=@"POST";
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
         NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self addTextView:dic];

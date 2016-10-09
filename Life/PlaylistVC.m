@@ -87,20 +87,27 @@
         NSString *baseStr;
         if (self.isSongId) {//
             baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@",[self.dataSource[i] valueForKey:@"songid"] ];
-            //NSLog(@"songid");
+            NSLog(@"songid");
         }else{//
-            //NSLog(@"song_id");
+           // NSLog(@"song_id");
             baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@",[self.dataSource[i] valueForKey:@"song_id"] ];
+           // NSLog(@"b...%@",baseStr);
         }
         
         NSString *urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSURLRequest *request=[NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
-    
+        
+        //NSLog(@"u...%@",urlStr);
+
+        NSURL *url=[NSURL URLWithString:urlStr];
+        NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+        request.HTTPMethod=@"GET";
         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
             if (data) {
                 NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 
-                [self.songinfoArr addObject:dic];
+                [self songinfoArr];
+                [_songinfoArr addObject:dic];
+                //NSLog(@"%@",self.songinfoArr);
                 [self.mainTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.mainTableView.mj_footer endRefreshing];
@@ -111,15 +118,19 @@
     }
 }
 -(void)viewWillAppear:(BOOL)animated{
+
+    NSLog(@"appear");
     [super viewWillAppear:YES];
     self.tabBarController.tabBar.hidden=YES;
     self.weather.hidden=YES;
+    [self netWorkWithUrl:[self createUrlstring] andTitle:self.title];
 }
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:YES];
     self.weather.hidden=NO;
 }
 - (void)viewDidLoad {
+    NSLog(@"didload");
     [super viewDidLoad];
     //
     if (!(self.type.length==0&&self.singerId==0)) {
@@ -130,7 +141,6 @@
         }];
     }
     self.mainTableView.backgroundColor=BACKGROUND_COLOR;
-    [self netWorkWithUrl:[self createUrlstring] andTitle:self.title];
   //  self.playViewController=[[PlayViewController alloc]init];
 }
 -(NSString*)createUrlstring{
@@ -159,13 +169,15 @@
 ///////
 -(void)netWorkWithUrl:(NSString*)urlStr andTitle:(NSString*)title{
     NSURL *url=[NSURL URLWithString:urlStr];
-    NSURLRequest *request=[NSURLRequest requestWithURL:url];
+    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod=@"POST";
     [self.loading begin];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new ] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
         
         if (data) {
             self.dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
             [self performSelectorOnMainThread:@selector(loadSongInfo) withObject:nil waitUntilDone:YES];
+            //NSLog(@"%@",_dic);
         }
         if (connectionError) {
             NSLog(@"%@",connectionError);
@@ -196,8 +208,23 @@
     }
     NSDictionary *dic=self.songinfoArr[indexPath.row];
     NSDictionary *info=[dic valueForKey:@"songinfo"];
-        cell.textLabel.text=[NSString stringWithFormat:@"%@--%@",[info valueForKey:@"author"],[info valueForKey:@"title"]];
-        [cell.imageView sd_setImageWithURL:[NSURL URLWithString:[info valueForKey:@"pic_small"]] placeholderImage:[UIImage imageNamed:@"0.jpg"]];
+    
+    cell.textLabel.text=[NSString stringWithFormat:@"%@--%@",[info valueForKey:@"author"],[info valueForKey:@"title"]];
+    cell.textLabel.textColor=Black_COLOR;
+    UIImageView *imageView=[[UIImageView alloc]init];
+    
+    [imageView sd_setImageWithURL:[NSURL URLWithString:[info valueForKey:@"pic_small"]] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+        UIImage *icon =imageView.image;
+        CGSize itemSize = CGSizeMake(65, 65);
+        UIGraphicsBeginImageContextWithOptions(itemSize, NO ,0.0);
+        CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
+        [icon drawInRect:imageRect];
+        
+        cell.imageView.image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+
+    }];
+    
 //    }
     cell.backgroundColor=BACKGROUND_COLOR;
     //cell.imageView.image=[UIImage imageNamed:@"1.jpg"];
@@ -211,9 +238,20 @@
     NSLog(@"播放....%@",title);
    // [[NSNotificationCenter defaultCenter]postNotificationName:@"jumpToPlayVC" object:nil userInfo:self.dicTransport];
   //  self.tabBarController.selectedIndex=2;
-    PlayView *play=[PlayView sharePlayView];
-    [play reload:self.dicTransport];
-    [self.view addSubview:play];
+//    PlayView *play=[PlayView sharePlayView];
+//    play.delegate=self;
+//    [self.view addSubview:play];
+    self.play.delegate=self;
+    [self show];
+    NSLog(@"跳转");
+    [self.play performSelector:@selector(reload:) withObject:self.dicTransport afterDelay:0.3];
 }
-
+-(void)removeFromSuperView{
+    self.play=[PlayView sharePlayView];
+    [self.play removeFromSuperview];
+    self.isPlayViewShow=NO;
+    self.tabBarController.tabBar.hidden=YES;
+    self.navigationItem.rightBarButtonItem.title=@"显示";
+    [self animateOut];
+}
 @end

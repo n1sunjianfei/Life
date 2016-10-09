@@ -11,13 +11,14 @@
 #import "PlayView.h"
 #import "MJRefresh.h"
 
+
 @interface PlaylistVC : BaseVC<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *mainTableView;
 @property(nonatomic,copy) NSDictionary *dic;
 @property(nonatomic,copy) NSMutableArray *dataSource;
 @property(nonatomic,copy) NSMutableArray *songinfoArr;
 //@property(nonatomic,strong) PlayViewController *playViewController;
-@property(nonatomic,strong) PlayView *playView;
+//@property(nonatomic,strong) PlayView *playView;
 
 @property(nonatomic,retain) NSMutableDictionary *dicTransport;//传给下一个对象的
 

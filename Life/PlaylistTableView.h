@@ -9,13 +9,14 @@
 #import <UIKit/UIKit.h>
 //#import "PlaylistCellModel.h"
 //#import "36KeWebImage.h"
-
+#import "Constant.h"
 #import "UIImageView+WebCache.h"
 
 @protocol PlaylistTableViewDelegate <NSObject>
 
 -(void)PlaySelectedMusic:(int)index;
 
+-(void)removePlaylistTable;
 @end
 
 @interface PlaylistTableView : UITableView<UITableViewDataSource,UITableViewDelegate>

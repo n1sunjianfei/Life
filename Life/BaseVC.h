@@ -12,11 +12,12 @@
 //#import "PlayView.h"
 #import "JF_LoadingView.h"
 
-@interface BaseVC : UIViewController
+@interface BaseVC : UIViewController<PlayViewDelegate>
 @property(nonatomic,assign) BOOL isPlayViewShow;
 @property(nonatomic,strong) UIView *weather;
 @property(nonatomic,strong) JF_LoadingView *loading;
-
+@property(nonatomic,strong) PlayView *play;
 -(void)animateIn;
 -(void)animateOut;
+-(void)show;
 @end

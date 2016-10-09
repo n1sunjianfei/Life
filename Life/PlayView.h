@@ -5,7 +5,10 @@
 //  Created by 孙建飞 on 16/10/6.
 //  Copyright © 2016年 sjf. All rights reserved.
 //
-
+/*
+ [self.slider setMinimumTrackImage:[UIImage imageNamed:@"slider_before.png"] forState:UIControlStateNormal];
+ [self.slider setMaximumTrackImage:[UIImage imageNamed:@"slider_back.png"] forState:UIControlStateNormal];
+ */
 #import <UIKit/UIKit.h>
 
 #import <AVFoundation/AVFoundation.h>
@@ -18,23 +21,38 @@
 
 #import "Constant.h"
 
-@interface PlayView : UIView<PlaylistTableViewDelegate>
+@protocol PlayViewDelegate <NSObject>
+
+-(void)removeFromSuperView;
+
+@end
+
+@interface PlayView : UIView<PlaylistTableViewDelegate,UITableViewDelegate,UITableViewDataSource>
 +(PlayView*)sharePlayView;
 -(instancetype)init;
 -(void)reload:(NSMutableDictionary *)dic;
+
+@property(nonatomic,strong) id <PlayViewDelegate> delegate;
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic,assign)float startTime;
 
 @property (strong, nonatomic) AVPlayer *player; //播放器对象
 @property (strong, nonatomic) AVPlayerItem *playerItem;
-@property (strong, nonatomic) id timeObserver; //视频播放时间观察者
+@property (strong, nonatomic) id timeObserver; //播放时间观察者
+
+
 @property (assign, nonatomic) NSInteger currentTime;//当前视频播放时间位置
 @property(nonatomic,assign) NSInteger totalTime;//总时间；
+@property(nonatomic,assign) NSInteger currentRowIndex;//总时间；
+
 //
+@property(nonatomic,assign) BOOL isSetPlayer;//是否正在初始化Player
+@property(nonatomic,assign) BOOL isGetLrc;//是否正在加载歌词
 
 @property(nonatomic,assign) BOOL iSplay;
 @property(nonatomic,assign)  BOOL isPlayListShow;//播放列表是否展示;
+@property(nonatomic,assign)  BOOL isLrcTableScrolling;//歌词列表是否正在滚动;
 
 @property(nonatomic,retain) NSMutableArray *playlistArr;
 
@@ -71,5 +89,15 @@
 - (IBAction)changePlayOrder:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UILabel *lrcLabel;
 
+@property (weak, nonatomic) IBOutlet UIPageControl *pageControl;
+@property (weak, nonatomic) IBOutlet UIButton *hidePlayListButton;
+
+@property(nonatomic,assign) int pageNum;
+@property(nonatomic,strong) UITableView *lrcTable;
+- (IBAction)swipe:(UISwipeGestureRecognizer *)sender;
+
+@property (weak, nonatomic) IBOutlet UIProgressView *progressView;
+@property (weak, nonatomic) IBOutlet UIButton *nextButton;
+@property (weak, nonatomic) IBOutlet UIButton *upButton;
 
 @end

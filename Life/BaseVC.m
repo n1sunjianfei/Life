@@ -31,7 +31,19 @@
     //           // self.extendedLayoutIncludesOpaqueBars = NO;
     //          //  self.modalPresentationCapturesStatusBarAppearance = NO;
     //        }
-    UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithTitle:@"展示" style:UIBarButtonItemStylePlain target:self action:@selector(show)];
+   // UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithTitle:@"显示" style:UIBarButtonItemStylePlain target:self action:@selector(show)];
+    
+   // rightBtn.image=[UIImage imageNamed:@"tab_play.png"];
+   // UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"tab_play.png"] style:UIBarButtonItemStylePlain target:self action:@selector(show)];
+    //
+    UIImageView *image=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"tab_play.png"]];
+    image.frame=CGRectMake(0, 0, 30, 30);
+
+    UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
+    [btn addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
+    btn.frame=CGRectMake(0, 0, 30, 30);
+    [image addSubview:btn];
+    UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithCustomView:image];
     self.navigationItem.rightBarButtonItem=rightBtn;
 
     self.navigationController.navigationBar.translucent = NO;
@@ -42,24 +54,33 @@
     
 }
 -(void)show{
-    if (self.isPlayViewShow) {
-        PlayView *play=[PlayView sharePlayView];
-        [play removeFromSuperview];
+    
+    if ([self.view.subviews containsObject:self.play]) {
+        self.play=[PlayView sharePlayView];
+        [self.play removeFromSuperview];
         self.isPlayViewShow=NO;
         self.tabBarController.tabBar.hidden=NO;
         self.navigationItem.rightBarButtonItem.title=@"显示";
         [self animateOut];
     }else{
-        PlayView *play=[PlayView sharePlayView];
-        [self.view addSubview:play];
+        self.play=[PlayView sharePlayView];
+        self.play.delegate=self;
+        [self.view addSubview:self.play];
         self.isPlayViewShow=YES;
         self.tabBarController.tabBar.hidden=YES;
         self.navigationItem.rightBarButtonItem.title=@"隐藏";
-        [play addAnimation];
+        [self.play addAnimation];
         [self animateIn];
     }
 }
-
+-(void)removeFromSuperView{
+    self.play=[PlayView sharePlayView];
+    [self.play removeFromSuperview];
+    self.isPlayViewShow=NO;
+    self.tabBarController.tabBar.hidden=NO;
+    self.navigationItem.rightBarButtonItem.title=@"显示";
+    [self animateOut];
+}
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:YES];
