@@ -41,6 +41,7 @@
 @property (strong, nonatomic) AVPlayerItem *playerItem;
 @property (strong, nonatomic) id timeObserver; //播放时间观察者
 
+@property(nonatomic,assign) int currentLrcIndex;
 
 @property (assign, nonatomic) NSInteger currentTime;//当前视频播放时间位置
 @property(nonatomic,assign) NSInteger totalTime;//总时间；

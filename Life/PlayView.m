@@ -218,8 +218,7 @@
     [self configNowPlayingCenter];
     [self getIrc];
     [self addProgressObserver];//进度监听
-    self.timer=nil;
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTimeAndSliderValue) userInfo:nil repeats:YES];
+
 }
 
 //获取歌词文件
@@ -255,7 +254,7 @@
 //解析歌词
 -(void)ana{
 
-    
+    NSLog(@"ana");
     NSString *lyc = [NSString stringWithContentsOfFile:[self getLocalFilePath] encoding:NSUTF8StringEncoding error:nil];
 //    NSLog(@"歌词----%@",lyc);
     NSArray *lycArray = [lyc componentsSeparatedByString:@"\n"];
@@ -285,11 +284,12 @@
                         //分割区间求歌词时间
                         NSString *timeString =[[lineArray objectAtIndex:i] substringWithRange:NSMakeRange(1, 5)];
                         [temdic setValue:lrcString forKey:timeString];
+//                        NSLog(@"词：%@",lrcString);
+//                        NSLog(@"时：%@",timeString);
                     }
 
                     
-                    //   NSLog(@"词：%@",lrcString);
-                    //   NSLog(@"时：%@",timeString);
+                    
                     // NSLog(@"%lu",(unsigned long)self.timeArr.count);
                     // NSLog(@"%lu",(unsigned long)self.stringArr.count);
                 }
@@ -302,16 +302,16 @@
         int i=0;
         do {
             [NSThread sleepForTimeInterval:0.1];
-            NSLog(@"是否正在滚动查询：%d次  %d",i+1,self.isLrcTableScrolling);
 
+            NSLog(@"是否正在滚动查询：1...%d次  %d",i+1,self.isLrcTableScrolling);
             //lrctable不滚动时添加新的
             if (self.isLrcTableScrolling==NO&&self.isSetPlayer==NO) {
                 NSLog(@"滚动结束");
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
+                    self.lrcLabel.text=@"正在加载歌词...";
                     [self addLrcTableWith:temdic];
-                    self.currentRowIndex=0;
+                    self.currentLrcIndex=-3;
                     self.nextButton.enabled=YES;
                     self.upButton.enabled=YES;
                 });
@@ -321,8 +321,6 @@
         } while (i<1000);
     });
     
-   // [self performSelector:@selector(addLrcTableWith:) withObject:temdic afterDelay:0.3];
-  //  [self addLrcTableWith:temdic];
 }
 -(void)addLrcTableWith:(NSMutableDictionary*)temdic{
 
@@ -348,16 +346,24 @@
         
         if (self.pageNum==1&&self.stringArr.count>0) {
             NSLog(@"contain");
+            
             [self CreateTable];
             [self addSubview:self.lrcTable];
+            
             if ([self.subviews containsObject:self.playListTableView]) {
                 [self bringSubviewToFront:self.hidePlayListButton];
                 [self bringSubviewToFront:self.playListTableView];
             }
         }
+        self.isGetLrc=NO;
+        self.timer=nil;
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTimeAndSliderValue) userInfo:nil repeats:YES];
+    }else{
+        self.isGetLrc=NO;
+        self.timer=nil;
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTimeAndSliderValue) userInfo:nil repeats:YES];
     }
-//    NSLog(@"m6");
-    self.isGetLrc=NO;
+
 }
 /*
  更新时间labe和slider
@@ -373,25 +379,26 @@
         int total=[[bitrate valueForKey:@"file_duration"] intValue];
         self.slider.value=(float)cur/(float)total;
        // NSLog(@"lrc...");
-        if (self.timeArr.count>0) {
+        if (self.timeArr.count>2&&self.stringArr.count>2) {
             //NSLog(@"歌词存在");
-          static  int index=0;
+//          static  int index=0;
             
             //NSLog(@"%@",lrcString);
             if ([self.timeArr containsObject:self.currentTimeLabel.text]) {
-                index=(int)[self.timeArr indexOfObject:self.currentTimeLabel.text];
+                self.currentLrcIndex=(int)[self.timeArr indexOfObject:self.currentTimeLabel.text];
                 //内容不为空时传值
-                if (![[self.stringArr objectAtIndex:index] isEqual:@""]) {
+                if (![[self.stringArr objectAtIndex:self.currentLrcIndex] isEqual:@""]) {
                    // NSLog(@"%@",[self.stringArr objectAtIndex:index]);
-                    self.lrcLabel.text=[self.stringArr objectAtIndex:index];
+                    self.lrcLabel.text=[self.stringArr objectAtIndex:self.currentLrcIndex];
 
                 }
             }
             if (self.lrcTable!=nil&&self.stringArr.count>0) {
                
                 if (self.isGetLrc!=YES) {
-                    self.currentRowIndex=index+5;
+                    self.currentRowIndex=self.currentLrcIndex+5;
                     NSIndexPath *indexPath=[NSIndexPath indexPathForRow:self.currentRowIndex inSection:0];
+                    
                     [self.lrcTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
                     
                     [self.lrcTable reloadData];
@@ -471,11 +478,14 @@
         }
     }else if([keyPath isEqualToString:@"loadedTimeRanges"]){
         NSArray *array = playerItem.loadedTimeRanges;
+//@@@@@@@@
+        
         CMTimeRange timeRange = [array.firstObject CMTimeRangeValue];//本次缓冲时间范围
         float startSeconds = CMTimeGetSeconds(timeRange.start);
         float durationSeconds = CMTimeGetSeconds(timeRange.duration);
         NSTimeInterval totalBuffer = startSeconds + durationSeconds;//缓冲总长度
 //        NSLog(@"缓冲：%f,total=%ld",totalBuffer,(long)self.totalTime);
+        
         if (totalBuffer>0&&self.isGetLrc==NO) {
         }
         //更新progreView进度；
@@ -872,11 +882,11 @@
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView{
     self.isLrcTableScrolling=YES;
-//    NSLog(@"scolling");
+   // NSLog(@"scolling");
 }
 
 -(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
-//    NSLog(@"end");
+  //  NSLog(@"end");
     self.isLrcTableScrolling=NO;
 
 }
