@@ -219,13 +219,11 @@
         UIGraphicsBeginImageContextWithOptions(itemSize, NO ,0.0);
         CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
         [icon drawInRect:imageRect];
-        
         cell.imageView.image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
 
     }];
-    
-//    }
+
     cell.backgroundColor=BACKGROUND_COLOR;
     //cell.imageView.image=[UIImage imageNamed:@"1.jpg"];
     return cell;
