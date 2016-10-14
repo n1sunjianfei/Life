@@ -42,12 +42,14 @@
         cell.textLabel.backgroundColor=[UIColor clearColor];
         cell.textLabel.font=[UIFont systemFontOfSize:16];
     }
-    NSDictionary *dic=[self.dataArr objectAtIndex:indexPath.row];
-   // NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
-    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
-    NSString *author=[songInfo valueForKey:@"author"];
-    NSString *title=[songInfo valueForKey:@"title"];
-    cell.textLabel.text=[NSString stringWithFormat:@"%ld、%@--%@",(long)indexPath.row+1,author,title];
+    NSString *txt;
+    if ([[self.dataArr[indexPath.row] valueForKey:@"artistname"] length]>0) {
+        txt=[NSString stringWithFormat:@"%ld、%@--%@",(long)indexPath.row+1,[self.dataArr[indexPath.row] valueForKey:@"artistname"],[self.dataArr[indexPath.row] valueForKey:@"songname"]];
+    }else{
+        txt=[NSString stringWithFormat:@"%ld、%@--%@",indexPath.row+1,[self.dataArr[indexPath.row] valueForKey:@"author"],[self.dataArr[indexPath.row] valueForKey:@"title"]];
+       // [cell.imageView sd_setImageWithURL:[NSURL URLWithString:[self.dataArr[indexPath.row] valueForKey:@"pic_small"]] placeholderImage:[UIImage imageNamed:@"tem.png"]];
+    }
+    cell.textLabel.text=txt;
     return cell;
 }
 /*

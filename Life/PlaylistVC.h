@@ -7,7 +7,7 @@
 //
 
 #import "BaseVC.h"
-#import "UIImageView+WebCache.h"
+//#import "UIImageView+WebCache.h"
 #import "PlayView.h"
 #import "MJRefresh.h"
 
@@ -30,5 +30,4 @@
 @property(nonatomic,copy) NSString *uid;
 @property(nonatomic,copy) NSString *singerId;
 @property(nonatomic,copy) NSString *type;
--(void)loadSongInfo;
 @end

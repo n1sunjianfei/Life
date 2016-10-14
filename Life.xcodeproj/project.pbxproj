@@ -117,6 +117,7 @@
 		CEDDB0C81D954CBA00144DB3 /* JokeCellSecond.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDDB0C31D954CBA00144DB3 /* JokeCellSecond.m */; };
 		CEDDB0C91D954CBA00144DB3 /* JokeCellFirst.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEDDB0C51D954CBA00144DB3 /* JokeCellFirst.xib */; };
 		CEDDB0CA1D954CBA00144DB3 /* JokeCellFirst.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDDB0C61D954CBA00144DB3 /* JokeCellFirst.m */; };
+		CEEBCE201DB077660015F4C2 /* hide.png in Resources */ = {isa = PBXBuildFile; fileRef = CEEBCE1F1DB077660015F4C2 /* hide.png */; };
 		CEF340091DA62BC1004C5A68 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF340071DA62BC1004C5A68 /* PlayView.m */; };
 		CEF3400A1DA62BC1004C5A68 /* PlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF340081DA62BC1004C5A68 /* PlayView.xib */; };
 /* End PBXBuildFile section */
@@ -308,6 +309,7 @@
 		CEDDB0C41D954CBA00144DB3 /* JokeCellFirst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JokeCellFirst.h; sourceTree = "<group>"; };
 		CEDDB0C51D954CBA00144DB3 /* JokeCellFirst.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JokeCellFirst.xib; sourceTree = "<group>"; };
 		CEDDB0C61D954CBA00144DB3 /* JokeCellFirst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JokeCellFirst.m; sourceTree = "<group>"; };
+		CEEBCE1F1DB077660015F4C2 /* hide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hide.png; sourceTree = "<group>"; };
 		CEF340061DA62BC1004C5A68 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
 		CEF340071DA62BC1004C5A68 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
 		CEF340081DA62BC1004C5A68 /* PlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayView.xib; sourceTree = "<group>"; };
@@ -654,6 +656,7 @@
 				CE9A9C6D1D925F6E0046E87A /* search_s.png */,
 				CE9A9C6F1D925FE70046E87A /* search.png */,
 				CE9A9C6B1D925E3B0046E87A /* music.png */,
+				CEEBCE1F1DB077660015F4C2 /* hide.png */,
 			);
 			name = tabbarimages;
 			sourceTree = "<group>";
@@ -854,6 +857,7 @@
 				CEDDB0C91D954CBA00144DB3 /* JokeCellFirst.xib in Resources */,
 				CEDDB0A91D94C11F00144DB3 /* NewsCellFirst.xib in Resources */,
 				CE9A9C911D92D38D0046E87A /* 4.jpg in Resources */,
+				CEEBCE201DB077660015F4C2 /* hide.png in Resources */,
 				CE9A9C6C1D925E3B0046E87A /* music.png in Resources */,
 				CE61C6271D9695EF00ED26BF /* icon.png in Resources */,
 				CE65E76F1D93CD7500C868CF /* pause.png in Resources */,

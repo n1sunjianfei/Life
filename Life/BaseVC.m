@@ -36,16 +36,18 @@
    // rightBtn.image=[UIImage imageNamed:@"tab_play.png"];
    // UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"tab_play.png"] style:UIBarButtonItemStylePlain target:self action:@selector(show)];
     //
-    UIImageView *image=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"tab_play.png"]];
-    image.frame=CGRectMake(0, 0, 30, 30);
-
-    UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
-    [btn addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
-    btn.frame=CGRectMake(0, 0, 30, 30);
-    [image addSubview:btn];
-    UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithCustomView:image];
+//    UIImageView *image=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"music_s.png"]];
+//    image.frame=CGRectMake(0, 0, 30, 30);
+//
+//    UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
+//    [btn addTarget:self action:@selector(show) forControlEvents:UIControlEventTouchUpInside];
+//    btn.frame=CGRectMake(0, 0, 30, 30);
+//    [image addSubview:btn];
+//    UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithCustomView:image];
+    UIImage *rightImage = [[UIImage imageNamed:@"music_s.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithImage:rightImage style:UIBarButtonItemStylePlain target:self action:@selector(show)];
     self.navigationItem.rightBarButtonItem=rightBtn;
-
     self.navigationController.navigationBar.translucent = NO;
     [super viewDidLoad];
     self.loading=[[JF_LoadingView alloc]init];
@@ -57,10 +59,12 @@
     
     if ([self.view.subviews containsObject:self.play]) {
         self.play=[PlayView sharePlayView];
+        [self.play removePlaylistTable];
         [self.play removeFromSuperview];
         self.isPlayViewShow=NO;
         self.tabBarController.tabBar.hidden=NO;
-        self.navigationItem.rightBarButtonItem.title=@"显示";
+        UIImage *rightImage = [[UIImage imageNamed:@"music_s.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        self.navigationItem.rightBarButtonItem.image=rightImage;
         [self animateOut];
     }else{
         self.play=[PlayView sharePlayView];
@@ -68,7 +72,8 @@
         [self.view addSubview:self.play];
         self.isPlayViewShow=YES;
         self.tabBarController.tabBar.hidden=YES;
-        self.navigationItem.rightBarButtonItem.title=@"隐藏";
+        UIImage *rightImage = [[UIImage imageNamed:@"hide.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        self.navigationItem.rightBarButtonItem.image=rightImage;
         [self.play addAnimation];
         [self animateIn];
     }
@@ -78,7 +83,8 @@
     [self.play removeFromSuperview];
     self.isPlayViewShow=NO;
     self.tabBarController.tabBar.hidden=NO;
-    self.navigationItem.rightBarButtonItem.title=@"显示";
+    UIImage *rightImage = [[UIImage imageNamed:@"music_s.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.navigationItem.rightBarButtonItem.image=rightImage;
     [self animateOut];
 }
 - (void)viewWillDisappear:(BOOL)animated

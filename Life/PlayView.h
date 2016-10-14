@@ -56,6 +56,8 @@
 @property(nonatomic,assign)  BOOL isLrcTableScrolling;//歌词列表是否正在滚动;
 
 @property(nonatomic,retain) NSMutableArray *playlistArr;
+@property(nonatomic,retain) NSDictionary *songDic;
+@property(nonatomic,retain) NSString *file_Link;
 
 @property(nonatomic,retain) NSArray *array;
 

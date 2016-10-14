@@ -96,6 +96,7 @@
  通知方法，播放选中的音乐;
  */
 -(void)reload:(NSMutableDictionary *)dic{
+    
     if (self.playlistArr==NULL) {
 //        NSLog(@"初始化数组");
         self.playlistArr=[[NSMutableArray alloc]init];
@@ -131,7 +132,38 @@
     }
     
 }
+/*
+ 获取歌曲列表信息
+ */
+-(NSDictionary*)loadSongInfo{
+    
+    //获取歌曲info信息并添加到songinfo数组中
+   
+        NSString *baseStr;
+        if ([[self.playlistArr[self.currentNum] valueForKey:@"songid"] length]>0) {//
+            baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@",[self.playlistArr[self.currentNum] valueForKey:@"songid"] ];
+           // NSLog(@"songid");
+        }else{//
+            // NSLog(@"song_id");
+            baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@",[self.playlistArr[self.currentNum] valueForKey:@"song_id"] ];
+            // NSLog(@"b...%@",baseStr);
+        }
+        
+        NSString *urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+       // NSLog(@"u...%@",urlStr);
+        
+        NSURL *url=[NSURL URLWithString:urlStr];
+        NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+        request.HTTPMethod=@"GET";
+        NSURLResponse *response;
+    
+    NSData *data=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+  //  NSLog(@"%@",dic);
+    return dic;
 
+}
 /*
  协议方法
  */
@@ -152,9 +184,9 @@
 -(void)setTimeLabel{
 //    NSLog(@"设置时间");
 //    NSLog(@"%ld",self.playlistArr.count);
-    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-    NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
-    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+//    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+    NSDictionary *bitrate=[self.songDic valueForKey:@"bitrate"];
+    NSDictionary *songInfo=[self.songDic valueForKey:@"songinfo"];
     self.totalTime=[[bitrate valueForKey:@"file_duration"] intValue];
 //    NSLog(@"%ld",(long)self.totalTime);
     self.currentTimeLabel.text=@"00:00";
@@ -169,7 +201,7 @@
  */
 -(void)setPlayerAndPlayMusic{
 
-    
+    self.songDic=[self loadSongInfo];
     [self.timer invalidate];
     self.progressView.progress=0;
     [self setMediaPlayer];
@@ -188,9 +220,8 @@
 //        NSLog(@"初始化播放器");
         /*method=baidu.ting.song.play&songid=877578*/
         
-        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-        NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
-        
+        NSDictionary *bitrate=[self.songDic valueForKey:@"bitrate"];
+//        
         NSString *urlStr=[bitrate valueForKey:@"file_link"];
 //        NSLog(@"%@",urlStr);
 //        NSLog(@"m1");
@@ -224,8 +255,8 @@
 //获取歌词文件
 -(void)getIrc{
 
-    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+//    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+    NSDictionary *songInfo=[self.songDic valueForKey:@"songinfo"];
     NSString *lrcStr=[songInfo valueForKey:@"lrclink"];
 
     if (lrcStr.length==0) {//没有歌词文件
@@ -373,8 +404,8 @@
         long long cur=self.playerItem.currentTime.value/self.playerItem.currentTime.timescale;
         //
         self.currentTimeLabel.text=[NSString stringWithFormat:@"%.2lld:%.2lld",cur/60,cur%60];
-        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-        NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
+//        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+        NSDictionary *bitrate=[self.songDic valueForKey:@"bitrate"];
         //   NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
         int total=[[bitrate valueForKey:@"file_duration"] intValue];
         self.slider.value=(float)cur/(float)total;
@@ -536,11 +567,12 @@
  */
 
 - (IBAction)sliderValueChange:(UISlider*)sender {
-    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-    NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
-    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
-    int total=[[bitrate valueForKey:@"file_duration"] intValue];
-    long long tt=sender.value*total;
+//    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+//    NSDictionary *bitrate=[dic valueForKey:@"bitrate"];
+//    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+//    int total=[[bitrate valueForKey:@"file_duration"] intValue];
+//    self.totalTime
+    long long tt=sender.value*self.totalTime;
     CMTime cmtime=CMTimeMake(tt, 1);
     [self.player pause];
     [self.playButton setImage:[UIImage imageNamed:@"pause.png"] forState:UIControlStateNormal];
@@ -686,7 +718,7 @@
     //音乐的标题
     [info setObject:self.nameLabel.text forKey:MPMediaItemPropertyTitle];
     //音乐的艺术家
-    NSString *author= [[self.playlistArr[self.currentNum] valueForKey:@"songinfo"] valueForKey:@"author"];
+    NSString *author= [[self.songDic valueForKey:@"songinfo"] valueForKey:@"author"];
     [info setObject:author forKey:MPMediaItemPropertyArtist];
     //音乐的播放时间
     [info setObject:@(self.player.currentTime.value) forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
@@ -696,8 +728,8 @@
     [info setObject:@(self.totalTime) forKey:MPMediaItemPropertyPlaybackDuration];
     
 
-        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-        NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+//        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
+        NSDictionary *songInfo=[self.songDic valueForKey:@"songinfo"];
 
         NSURL *url=[NSURL URLWithString:[songInfo valueForKey:@"pic_big"]];
     
@@ -726,8 +758,8 @@
     NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path=[arr objectAtIndex:0];
     //  NSString *filepath=[path stringByAppendingPathComponent:_selectedPlaylistCellModel.playUrl32];
-    NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
-    NSDictionary *songInfo=[dic valueForKey:@"songinfo"];
+    NSDictionary *songInfo=[self.songDic valueForKey:@"songinfo"];
+//    NSString *lrcStr=[songInfo valueForKey:@"lrclink"];
     NSString *filepath=[NSString stringWithFormat:@"%@/%@-%@.lrc",path,[songInfo valueForKey:@"author"],[songInfo valueForKey:@"title"]];
 //    NSLog(@"%@",filepath);
     return filepath;
@@ -791,6 +823,9 @@
             
             
         }else if (self.pageNum==0) {
+            if ([self.subviews containsObject:self.playListTableView]) {
+                [self removePlaylistTable];
+            }
             [self.delegate removeFromSuperView];
         }
     }
