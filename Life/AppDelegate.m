@@ -16,6 +16,8 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    
     self.window=[[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     UITabBarController *rootTab= [[UITabBarController alloc]init];
     /*
@@ -54,6 +56,8 @@
     nav4.tabBarItem.title=@"看笑话";
     nav4.tabBarItem.selectedImage=[[UIImage imageNamed:@"jokes_s.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     nav4.tabBarItem.image=[[UIImage imageNamed:@"jokes.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    //nav1.tabBarItem.badgeValue=@"love";
+
     //nav1.tabBarItem.badgeValue=@"love";
 
     

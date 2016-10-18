@@ -99,30 +99,16 @@
 -(void)loadWeather{
 
   //  NSLog(@"load weather");
-    NSString *str=[NSString stringWithFormat:@"http://op.juhe.cn/onebox/weather/query?cityname=%@&key=807c860cf95c4ccbb14c5c29ad45af99",[self.city stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-//    NSLog(@"%@",str);
-//    NSLog(@"%s",[str UTF8String]);
-    NSURL *url=[NSURL URLWithString:str];
-    
-    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod=@"POST";
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-      NSDictionary *dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-        NSDictionary *resultDic= [dic valueForKey:@"result"];
-        NSDictionary *datadic=[resultDic valueForKey:@"data"];
-        NSDictionary *weatherDic= [datadic valueForKey:@"realtime"];
-        
-        
-        NSDictionary *temDic=[weatherDic valueForKey:@"weather"];
-        NSDictionary *windDic=[weatherDic valueForKey:@"wind"];
-        dispatch_async(dispatch_get_main_queue(), ^{
+    NSString *str=[NSString stringWithFormat:@"http://op.juhe.cn/onebox/weather/query?cityname=%@&key=807c860cf95c4ccbb14c5c29ad45af99",[JsonNetwork encodeUrlStrWithString:self.city]];
+        [JsonNetwork loadWeatherWithUrlstr:str block:^(NSDictionary *dic) {
+                    NSDictionary *temDic=[dic valueForKey:@"weather"];
+                    NSDictionary *windDic=[dic valueForKey:@"wind"];
+                    dispatch_async(dispatch_get_main_queue(), ^{
             
-            self.weatherLale.text=[NSString stringWithFormat:@"%@ %@℃ %@ %@",[temDic valueForKey:@"info"],[temDic valueForKey:@"temperature"],[windDic valueForKey:@"direct"],[windDic valueForKey:@"power"]];
-        });
-    }
-     ];
-    self.isWeather=YES;
+                        self.weatherLale.text=[NSString stringWithFormat:@"%@ %@℃ %@ %@",[temDic valueForKey:@"info"],[temDic valueForKey:@"temperature"],[windDic valueForKey:@"direct"],[windDic valueForKey:@"power"]];
+                    });
+        }];
+        self.isWeather=YES;
 }
 -(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
     NSLog(@"error=%@",error);

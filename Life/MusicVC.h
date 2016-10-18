@@ -8,7 +8,9 @@
 
 #import "BaseVC.h"
 #import "PlaylistVC.h"
-@interface MusicVC : BaseVC<UISearchBarDelegate>
+#import "PlayView.h"
+#import "PlayHistory.h"
+@interface MusicVC : BaseVC<UISearchBarDelegate,UIAlertViewDelegate,PlayViewDelegate>
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UISearchBar *searchbar;
 @property (weak, nonatomic) IBOutlet UIButton *cancelButton;
@@ -19,4 +21,5 @@
 
 @property(nonatomic,copy) NSArray *songListArr;
 @property(nonatomic,copy) NSArray *colorsArr;
+
 @end

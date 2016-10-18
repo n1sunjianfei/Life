@@ -22,4 +22,6 @@
 #define Gray_COLOR [UIColor colorWithRed:128.0/255 green:128.0/255 blue:105.0/255 alpha:1.0]
 #define White_COLOR [UIColor colorWithRed:250.0/255 green:250.0/255 blue:240.0/255 alpha:1.0]
 
+#import "Netaccess.h"
+#import "JsonNetwork.h"
 #endif /* Constant_h */

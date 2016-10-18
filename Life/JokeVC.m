@@ -61,20 +61,29 @@
     six.delegate=self;
     //
     self.mainTableView.mj_header=[MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]) {
+            [self addAlertView];
+            [self.mainTableView.mj_header endRefreshing];
+        }else{
         [self.dataSource removeAllObjects];
         self.dataSource=nil;
         //NSLog(@"header数据数量：%ld",self.dataSource.count);
         self.pageNum=1;
 
         [self NetworkGetJokeJson:self.currentSelectedTag];
-        
+        }
     }];
     //
     self.mainTableView.mj_footer=[MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+        if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]) {
+            [self addAlertView];
+            [self.mainTableView.mj_footer endRefreshing];
+
+        }else{
         self.pageNum+=1;
         //NSLog(@"footer数据数量：%ld",self.dataSource.count);
-
         [self NetworkGetJokeJson:self.currentSelectedTag];
+        }
     }];
     //
     [self.mainTableView.mj_header beginRefreshing];
@@ -238,7 +247,9 @@
 }
 #pragma mark-click SEG
 -(void)clickButton:(UIButton *)sender{
-    
+    if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]) {
+        [self addAlertView];
+    }else{
     //搜索相关标题
     NSLog(@"标题:%@",[self.titleItemArr objectAtIndex:sender.tag]);
     if (sender.tag==0||sender.tag==1) {
@@ -248,12 +259,13 @@
             [self.mainTableView.mj_header beginRefreshing];
             self.currentSelectedTag=(int)sender.tag;
         }
-       
     }else{
         self.loadingView =[[ JF_LoadingView alloc]init];
         [self.view addSubview:self.loadingView];
         [self.loadingView begin];
         [self addWebView:(int)sender.tag];
+    }
+        
     }
 }
 
@@ -264,51 +276,29 @@
     NSString *searchStr=[NSString stringWithFormat:@"page=%d&pagesize=10",self.pageNum];
     NSString *urlStr=[baseStr stringByAppendingString:searchStr];
     NSLog(@"网址：%@",urlStr);
-    NSURL *url=[NSURL URLWithString:urlStr];
-    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
-    request.cachePolicy=NSURLRequestReloadIgnoringCacheData;
-    request.timeoutInterval=20;
-    request.HTTPMethod=@"POST";
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-        
-        if (data) {
-            NSDictionary *dataDic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-            NSDictionary *resultDic=[dataDic valueForKey:@"result"];
-            
-           // NSMutableArray *temp=[NSMutableArray addself.dataSource];
-            [self.dataSource addObjectsFromArray:[resultDic valueForKey:@"data"]];
-            
-            //NSLog(@"数据的数量%ld",self.dataSource.count);
 
-
-//           
-            //加载新添加的图片资源
-            for (int i=((self.pageNum-1)*10); i<self.dataSource.count; i++) {
-                NSString *urlStr=[self.dataSource[i] valueForKey:@"url"];
-                NSData *dataGif;
-                if (urlStr.length>0) {
-                    //本地
-                    if ([NSData dataWithContentsOfFile:[self getLocalFilePath:urlStr]]) {
-                        dataGif=[NSData dataWithContentsOfFile:[self getLocalFilePath:urlStr]];
-                        //NSLog(@"本地--index=%d",i);
-                    }else{//网络端请求
-                        dataGif=[NSData dataWithContentsOfURL:[NSURL URLWithString:urlStr]];
-                        [dataGif writeToFile:[self getLocalFilePath:urlStr] atomically:YES];
-                        //NSLog(@"网络--index=%d",i);
-                    }
-                    
-                    [self.gifDataArr addObject:dataGif];
-                    
+    [JsonNetwork loadNewsDataWithUrlstr:urlStr block:^(NSDictionary *dic) {
+        [self.dataSource addObjectsFromArray:[dic valueForKey:@"data"]];
+        //加载新添加的图片资源
+        for (int i=((self.pageNum-1)*10); i<self.dataSource.count; i++) {
+            NSString *urlStr=[self.dataSource[i] valueForKey:@"url"];
+            NSData *dataGif;
+            if (urlStr.length>0) {
+                //本地
+                if ([NSData dataWithContentsOfFile:[self getLocalFilePath:urlStr]]) {
+                    dataGif=[NSData dataWithContentsOfFile:[self getLocalFilePath:urlStr]];
+                    //NSLog(@"本地--index=%d",i);
+                }else{//网络端请求
+                    dataGif=[NSData dataWithContentsOfURL:[NSURL URLWithString:urlStr]];
+                    [dataGif writeToFile:[self getLocalFilePath:urlStr] atomically:YES];
+                    //NSLog(@"网络--index=%d",i);
                 }
-                
+                [self.gifDataArr addObject:dataGif];
             }
-            [self performSelectorOnMainThread:@selector(reloadUI) withObject:nil waitUntilDone:YES];
-        }else{
-            NSLog(@"网络不可用...");
-          [self performSelectorOnMainThread:@selector(reloadUI) withObject:nil waitUntilDone:YES];
-
         }
+        [self performSelectorOnMainThread:@selector(reloadUI) withObject:nil waitUntilDone:YES];
     }];
+    
 }
 
 -(void)reloadUI{
@@ -462,11 +452,14 @@
 获取文件路径
 */
 -(NSString *)getLocalFilePath:(NSString*)urlStr{
-    
+    NSFileManager *manager=[NSFileManager defaultManager];
     NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path=[arr objectAtIndex:0];
-
-    NSString *filepath=[NSString stringWithFormat:@"%@/%@",path,[self getFileName:urlStr]];
+    NSString *path2=[path stringByAppendingPathComponent:@"/gif"];
+    if (![manager fileExistsAtPath:path2]) {
+        [manager createDirectoryAtPath:path2 withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    NSString *filepath=[NSString stringWithFormat:@"%@/%@",path2,[self getFileName:urlStr]];
     //NSLog(@"%@",filepath);
     return filepath;
 }
@@ -485,5 +478,4 @@
     }
     return result;
 }
-
 @end

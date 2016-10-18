@@ -175,6 +175,21 @@
                     <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <color key="currentPageIndicatorTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                 </pageControl>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="08f-C4-kYN">
+                    <rect key="frame" x="8" y="411" width="60" height="20"/>
+                    <color key="backgroundColor" red="0.3993060907" green="0.91846386719999995" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="TQg-7v-eL7"/>
+                        <constraint firstAttribute="width" constant="60" id="eEv-c9-G2x"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <state key="normal" title="下载">
+                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="downloadSong:" destination="mUj-l5-FSj" eventType="touchUpInside" id="Zix-Rx-Rve"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <gestureRecognizers/>
@@ -182,7 +197,9 @@
                 <constraint firstItem="NHv-DS-MyA" firstAttribute="top" secondItem="w3T-A0-k0t" secondAttribute="bottom" constant="2" id="0EQ-wr-udx"/>
                 <constraint firstAttribute="trailing" secondItem="s7X-Cq-3pK" secondAttribute="trailing" id="8xJ-4F-8e2"/>
                 <constraint firstAttribute="bottom" secondItem="NHv-DS-MyA" secondAttribute="bottom" id="BGb-Nu-agN"/>
+                <constraint firstItem="08f-C4-kYN" firstAttribute="leading" secondItem="mUj-l5-FSj" secondAttribute="leading" constant="8" id="GhW-y5-vlS"/>
                 <constraint firstAttribute="trailing" secondItem="NHv-DS-MyA" secondAttribute="trailing" id="I2a-vl-zJF"/>
+                <constraint firstItem="s7X-Cq-3pK" firstAttribute="top" secondItem="08f-C4-kYN" secondAttribute="bottom" constant="10" id="IEb-sk-zPd"/>
                 <constraint firstItem="CP0-dY-V2Y" firstAttribute="top" secondItem="mUj-l5-FSj" secondAttribute="top" constant="20" id="LBt-Gn-vIc"/>
                 <constraint firstItem="w3T-A0-k0t" firstAttribute="trailing" secondItem="NHv-DS-MyA" secondAttribute="trailing" id="OIV-eS-j3p"/>
                 <constraint firstItem="tvd-dS-FSu" firstAttribute="leading" secondItem="mUj-l5-FSj" secondAttribute="leading" constant="20" id="OLN-9i-TgC"/>
@@ -204,6 +221,7 @@
             <connections>
                 <outlet property="currentTimeLabel" destination="vb8-Hd-tuR" id="WB0-eI-DUr"/>
                 <outlet property="downView" destination="NHv-DS-MyA" id="mLl-m2-smp"/>
+                <outlet property="downloadBtn" destination="08f-C4-kYN" id="LlS-ae-Xqu"/>
                 <outlet property="hidePlayListButton" destination="w3T-A0-k0t" id="sCR-yI-Wjf"/>
                 <outlet property="imageView" destination="xTs-3v-idI" id="hD6-G0-mlD"/>
                 <outlet property="lrcLabel" destination="tvd-dS-FSu" id="txU-3i-G2Y"/>

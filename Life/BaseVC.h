@@ -11,7 +11,6 @@
 #import "WeatherView.h"
 //#import "PlayView.h"
 #import "JF_LoadingView.h"
-
 @interface BaseVC : UIViewController<PlayViewDelegate>
 @property(nonatomic,assign) BOOL isPlayViewShow;
 @property(nonatomic,strong) UIView *weather;
@@ -20,4 +19,6 @@
 -(void)animateIn;
 -(void)animateOut;
 -(void)show;
+-(NSString *)getLocalPlayHistoryPlistPath;
+-(void)addAlertView;
 @end

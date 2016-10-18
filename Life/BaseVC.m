@@ -48,6 +48,10 @@
     
     UIBarButtonItem *rightBtn=[[UIBarButtonItem alloc]initWithImage:rightImage style:UIBarButtonItemStylePlain target:self action:@selector(show)];
     self.navigationItem.rightBarButtonItem=rightBtn;
+    
+//    UIBarButtonItem *clearBtn=[[UIBarButtonItem alloc]initWithTitle:@"清空缓存" style:UIBarButtonItemStylePlain target:self action:@selector(show)];
+//    self.navigationItem.leftBarButtonItem=clearBtn;
+    
     self.navigationController.navigationBar.translucent = NO;
     [super viewDidLoad];
     self.loading=[[JF_LoadingView alloc]init];
@@ -162,5 +166,26 @@
                 break;
         }
     }
+}
+/*
+ 获取文件路径
+ */
+-(NSString *)getLocalPlayHistoryPlistPath{
+    NSFileManager *manager=[NSFileManager defaultManager];
+    NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *path=[arr objectAtIndex:0];
+    NSString *dirPath=[path stringByAppendingPathComponent:@"/playHistoryList.plist"];
+    if (![manager fileExistsAtPath:dirPath]) {
+        NSMutableArray *imageDic=[[NSMutableArray alloc]init];
+        [imageDic writeToFile:dirPath atomically:YES];
+    }
+  //  [manager removeItemAtPath:dirPath error:nil];
+    NSLog(@"%@",dirPath);
+    return dirPath;
+}
+
+-(void)addAlertView{
+    UIAlertView *misNet=[[UIAlertView alloc]initWithTitle:@"网络不可用" message:@"去设置网络吧" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [misNet show];
 }
 @end

@@ -102,5 +102,6 @@
 @property (weak, nonatomic) IBOutlet UIProgressView *progressView;
 @property (weak, nonatomic) IBOutlet UIButton *nextButton;
 @property (weak, nonatomic) IBOutlet UIButton *upButton;
+@property (weak, nonatomic) IBOutlet UIButton *downloadBtn;
 
 @end

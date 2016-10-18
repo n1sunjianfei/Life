@@ -133,34 +133,22 @@
     if (self.type.length==0&&self.singerId.length==0) {
         baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.search.catalogSug&query=%@",self.title];
     }
-    urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//    urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
    // NSLog(@"生成的urlStr是：%@",urlStr);
-    
+    urlStr=[JsonNetwork encodeUrlStrWithString:baseStr];
     return urlStr;
 }
 ///////
 -(void)netWorkWithUrl:(NSString*)urlStr andTitle:(NSString*)title{
-    NSURL *url=[NSURL URLWithString:urlStr];
-    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod=@"POST";
-    [self.loading begin];
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new ] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-        
-        if (data) {
-            self.dic=  [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-         //   [self performSelectorOnMainThread:@selector(loadSongInfo) withObject:nil waitUntilDone:YES];
-           // [self addDataSources];
 
+    [self.loading begin];
+
+    [JsonNetwork loadPlaylistWithUrlstr:urlStr block:^(NSDictionary *dic) {
+        if (dic) {
+            self.dic=dic;
             [self performSelectorOnMainThread:@selector(addDataSources) withObject:nil waitUntilDone:YES];
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [self.mainTableView.mj_footer endRefreshing];
-//                [self.loading stop];
-//
-//            });
-            //NSLog(@"%@",_dic);
-        }
-        if (connectionError) {
-            NSLog(@"%@",connectionError);
+        }else{
+            [self.loading stop];
         }
     }];
 }

@@ -60,6 +60,12 @@
             self.imageView.layer.cornerRadius=75;
         //
         [self addNotification];
+        //
+        self.downloadBtn.layer.masksToBounds=YES;
+        self.downloadBtn.layer.cornerRadius=4;
+        //
+        [self setupNotification];//活跃度监听
+
     }
     return self;
 }
@@ -74,6 +80,8 @@
      给AVPlayerItem添加播放完成通知
      */
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
+ 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAudioSessionEvent:) name:AVAudioSessionInterruptionNotification object:nil];
 }
 
 
@@ -84,6 +92,23 @@
     NSLog(@"音乐播放完成.");
     [self nextMusic:nil];
     
+}
+/*
+ 中断时调用
+ */
+- (void)onAudioSessionEvent:(NSNotification *)notification{
+    if ([notification.name isEqualToString:AVAudioSessionInterruptionNotification]) {
+        //Check to see if it was a Begin interruption
+        if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
+            NSLog(@"Interruption began!");
+            
+        } else if([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded]]){
+            NSLog(@"Interruption ended!");
+            //Resume your audio
+            [self.player play];
+            
+        }
+    }
 }
 
 // 重写父类成为响应者方法
@@ -102,16 +127,12 @@
         self.playlistArr=[[NSMutableArray alloc]init];
     }
     self.playListTableView=[[PlaylistTableView alloc]initWithFrame:CGRectMake(0, self.imageView.frame.origin.y+self.imageView.frame.size.height, SCREEN_WIDTH-200, 0) style:UITableViewStyleGrouped];
-    
     //NSDictionary *dic=userInfo.userInfo;
     NSArray *arr =[dic valueForKey:@"array"];
     NSString  *index=[dic valueForKey:@"index"];
     self.lastID=[[dic valueForKey:@"lastv"] intValue];
     NSString *title=[dic valueForKey:@"title"];
-    
-    
     int i=[index intValue];
-    
     self.playlistArr=[NSMutableArray arrayWithArray:arr];
     //更新播放列表;
     self.playListTableView=[[PlaylistTableView alloc]initWithFrame:CGRectMake(SCREEN_WIDTH,100, SCREEN_WIDTH-105,SCREEN_HEIGHT-100-self.downView.frame.size.height) style:UITableViewStylePlain];
@@ -119,17 +140,21 @@
     self.playListTableView.dataArr=self.playlistArr;
     //NSLog(@"tbdata%lu",(unsigned long)_playListTableView.dataArr.count);
     [self.playListTableView reloadData];
-    //判断选中的歌曲是否正在播放
-    if (!(i==self.currentNum&&title==self.lastTitle)) {
-        self.lastTitle=title;
-        self.currentNum=i;
-//        NSLog(@"reload %d,title:%@",self.currentNum,self.lastTitle);
-        
-        [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
-       // [self configNowPlayingCenter];
-        
-        [self setPlayerAndPlayMusic];
-    }
+
+        if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]&&![self isLocalFile:i]) {//没网同时也不是本地文件
+            [self addAlertView];
+        }else{
+            //判断选中的歌曲是否正在播放
+            if (!(i==self.currentNum&&title==self.lastTitle)) {
+                self.lastTitle=title;
+                self.currentNum=i;
+                //        NSLog(@"reload %d,title:%@",self.currentNum,self.lastTitle);
+                
+                [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
+                // [self configNowPlayingCenter];
+                [self setPlayerAndPlayMusic];
+            }
+        }
     
 }
 /*
@@ -138,41 +163,48 @@
 -(NSDictionary*)loadSongInfo{
     
     //获取歌曲info信息并添加到songinfo数组中
-   
+    NSString *songid;
+    
         NSString *baseStr;
         if ([[self.playlistArr[self.currentNum] valueForKey:@"songid"] length]>0) {//
-            baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@",[self.playlistArr[self.currentNum] valueForKey:@"songid"] ];
+            songid=[self.playlistArr[self.currentNum] valueForKey:@"songid"];
+            baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@", songid];
            // NSLog(@"songid");
         }else{//
             // NSLog(@"song_id");
-            baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@",[self.playlistArr[self.currentNum] valueForKey:@"song_id"] ];
+            songid=[self.playlistArr[self.currentNum] valueForKey:@"song_id"];
+            baseStr=[NSString stringWithFormat:@"http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=%@", songid];
             // NSLog(@"b...%@",baseStr);
         }
+    //是反本地有下载的文件
+    NSDictionary *dic;
+    if ([self isLocalFile:self.currentNum]) {
+        NSLog(@"本地");
+        NSString *songidPath=[NSString stringWithFormat:@"%@/%@.plist",[JsonNetwork getLocalDownloadDir],songid];
         
-        NSString *urlStr=[baseStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-       // NSLog(@"u...%@",urlStr);
-        
-        NSURL *url=[NSURL URLWithString:urlStr];
-        NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
-        request.HTTPMethod=@"GET";
-        NSURLResponse *response;
-    
-    NSData *data=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-  //  NSLog(@"%@",dic);
-    return dic;
-
+        dic=[NSDictionary dictionaryWithContentsOfFile:songidPath];
+        return dic;
+    }else{
+        NSLog(@"网络");
+        NSString *urlStr=[JsonNetwork encodeUrlStrWithString:baseStr];
+        dic=[JsonNetwork loadSonginfoWithUrlstr:urlStr];
+        return dic;
+    }
+ 
 }
 /*
  协议方法
  */
 -(void)PlaySelectedMusic:(int)index{
+    
+    if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]) {
+        [self addAlertView];
+    }else{
     if (self.currentNum!=index) {
         self.currentNum=index;
         [self setPlayerAndPlayMusic];
     }
-    
+    }
 }
 -(void)removePlaylistTable{
     [self hidePlaylistTableView:nil];
@@ -200,8 +232,17 @@
  初始化播放器然后播放;
  */
 -(void)setPlayerAndPlayMusic{
-
+    
     self.songDic=[self loadSongInfo];
+   
+    NSString *path=[self getLocalPlayHistoryPlistPath];
+    NSMutableArray *arr=[NSMutableArray arrayWithContentsOfFile:path];
+    if ([arr containsObject:self.playlistArr[self.currentNum]]) {
+        [arr removeObject:self.playlistArr[self.currentNum]];
+//        NSLog(@"重新添加");
+    }
+    [arr addObject:self.playlistArr[self.currentNum]];
+    [arr writeToFile:path atomically:YES];
     [self.timer invalidate];
     self.progressView.progress=0;
     [self setMediaPlayer];
@@ -228,7 +269,26 @@
         //
           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         self.isSetPlayer=YES;
-        NSURL *url=[NSURL URLWithString:urlStr];
+              NSDictionary *songinfo=[self.songDic valueForKey:@"songinfo"];
+              NSString *filepath=[NSString stringWithFormat:@"%@/%@-%@.mp3",[JsonNetwork getLocalDownloadDir],[songinfo valueForKey:@"author"],[songinfo valueForKey:@"title"]];
+              NSURL *url;
+              if ([NSData dataWithContentsOfFile:filepath]) {
+                  //NSLog(@"本地歌曲");
+                  url=[NSURL fileURLWithPath:filepath];
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                      [self setTimeLabel];
+                      [self.downloadBtn setTitle:@"已下载" forState:UIControlStateNormal];
+                      self.downloadBtn.enabled=NO;
+                  });
+                 
+              }else{
+                  url=[NSURL URLWithString:urlStr];
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                      
+                      [self.downloadBtn setTitle:@"下载" forState:UIControlStateNormal];
+                      self.downloadBtn.enabled=YES;
+                  });
+              }
         _playerItem=[AVPlayerItem playerItemWithURL:url];
         _player = [AVPlayer playerWithPlayerItem:_playerItem];
         _player.volume=1;
@@ -245,7 +305,6 @@
     [self.player play];
     [self.playButton setImage:[UIImage imageNamed:@"play.png"] forState:UIControlStateNormal];
     self.iSplay=YES;
-    [self setupNotification];//活跃度监听
     [self configNowPlayingCenter];
     [self getIrc];
     [self addProgressObserver];//进度监听
@@ -262,22 +321,14 @@
     if (lrcStr.length==0) {//没有歌词文件
         [self ana];
     }else{
-    if ([NSData dataWithContentsOfFile:[self getLocalFilePath]]) {
-        NSLog(@"本地歌词");
+    if ([NSData dataWithContentsOfFile:[JsonNetwork getLocalFilePathWith:songInfo]]) {
+      //  NSLog(@"本地歌词");
         self.isGetLrc=YES;
         [self ana];
     }else{
-        NSURL *url=[NSURL URLWithString:lrcStr];
-        NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
-        request.HTTPMethod=@"GET";
-        
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-            if (data) {
-                [data writeToFile:[self getLocalFilePath] atomically:YES];
-                NSLog(@"歌词准备完毕");
-                self.isGetLrc=YES;
-                [self performSelectorOnMainThread:@selector(ana) withObject:nil waitUntilDone:YES];
-            }
+        self.isGetLrc=YES;
+        [JsonNetwork getLrcWithUrlstr:lrcStr withSonginfo:songInfo block:^(NSDictionary *dic) {
+            [self performSelectorOnMainThread:@selector(ana) withObject:nil waitUntilDone:YES];
         }];
     }
     }
@@ -285,8 +336,8 @@
 //解析歌词
 -(void)ana{
 
-    NSLog(@"ana");
-    NSString *lyc = [NSString stringWithContentsOfFile:[self getLocalFilePath] encoding:NSUTF8StringEncoding error:nil];
+//    NSLog(@"ana");
+    NSString *lyc = [NSString stringWithContentsOfFile:[JsonNetwork getLocalFilePathWith:[self.songDic valueForKey:@"songinfo"]] encoding:NSUTF8StringEncoding error:nil];
 //    NSLog(@"歌词----%@",lyc);
     NSArray *lycArray = [lyc componentsSeparatedByString:@"\n"];
     NSMutableDictionary *temdic=[[NSMutableDictionary alloc]init];
@@ -334,10 +385,10 @@
         do {
             [NSThread sleepForTimeInterval:0.1];
 
-            NSLog(@"是否正在滚动查询：1...%d次  %d",i+1,self.isLrcTableScrolling);
+//            NSLog(@"是否正在滚动查询：1...%d次  %d",i+1,self.isLrcTableScrolling);
             //lrctable不滚动时添加新的
             if (self.isLrcTableScrolling==NO&&self.isSetPlayer==NO) {
-                NSLog(@"滚动结束");
+//                NSLog(@"滚动结束");
 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.lrcLabel.text=@"正在加载歌词...";
@@ -355,7 +406,7 @@
 }
 -(void)addLrcTableWith:(NSMutableDictionary*)temdic{
 
-    NSLog(@"addLrcTable");
+//    NSLog(@"addLrcTable");
     _timeArr=[[NSMutableArray alloc]init];
     _stringArr=[[NSMutableArray alloc]init];
     [self.lrcTable removeFromSuperview];
@@ -376,7 +427,7 @@
         }
         
         if (self.pageNum==1&&self.stringArr.count>0) {
-            NSLog(@"contain");
+//            NSLog(@"contain");
             
             [self CreateTable];
             [self addSubview:self.lrcTable];
@@ -458,7 +509,6 @@
         //NSLog(@"当前已经播放%f",current);
         weakself.currentTime = current;
         if (current) {
-            
            // [weakself setTime:(int)current withTotal:total];
         }
     }];
@@ -643,9 +693,7 @@
  上一首
  */
 - (IBAction)lastMusic:(UIButton*)sender {
-    
-    NSLog(@"%d",self.currentNum);
-    
+    int lastnum=self.currentNum;
     if (_playlistArr.count<2) {//数量小于2，什么都不做直接返回；
         NSLog(@"只有一首歌曲");
         return;
@@ -656,17 +704,22 @@
     }else{
         self.currentNum--;
     }
+    if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]&&![self isLocalFile:self.currentNum]) {//没网同时也不是本地文件
+        [self addAlertView];
+        self.currentNum=lastnum;
+    }else{
+    
     self.nextButton.enabled=NO;
     self.upButton.enabled=NO;
     [self setPlayerAndPlayMusic];
-
+    }
 }
 /*
  下一首
  */
 - (IBAction)nextMusic:(UIButton *)sender {
-    
-    
+    int lastnum=self.currentNum;
+
     if (_playlistArr.count<2) {
         NSLog(@"只有一首歌曲");
         return;
@@ -678,10 +731,15 @@
         self.currentNum++;
     }
 
-    self.nextButton.enabled=NO;
-    self.upButton.enabled=NO;
-    [self setPlayerAndPlayMusic];
+        if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]&&![self isLocalFile:self.currentNum]) {//没网同时也不是本地文件
+            [self addAlertView];
+            self.currentNum=lastnum;
+        }else{//有网或者是本地文件
 
+            self.nextButton.enabled=NO;
+            self.upButton.enabled=NO;
+            [self setPlayerAndPlayMusic];
+        }
 }
 
 /*
@@ -716,7 +774,7 @@
     // BASE_INFO_FUN(@"配置NowPlayingCenter");
     NSMutableDictionary * info = [NSMutableDictionary dictionary];
     //音乐的标题
-    [info setObject:self.nameLabel.text forKey:MPMediaItemPropertyTitle];
+    [info setObject:[[self.songDic valueForKey:@"songinfo"] valueForKey:@"title"] forKey:MPMediaItemPropertyTitle];
     //音乐的艺术家
     NSString *author= [[self.songDic valueForKey:@"songinfo"] valueForKey:@"author"];
     [info setObject:author forKey:MPMediaItemPropertyArtist];
@@ -726,7 +784,6 @@
     [info setObject:@(1) forKey:MPNowPlayingInfoPropertyPlaybackRate];
     //音乐的总时间
     [info setObject:@(self.totalTime) forKey:MPMediaItemPropertyPlaybackDuration];
-    
 
 //        NSDictionary *dic=[self.playlistArr objectAtIndex:self.currentNum];
         NSDictionary *songInfo=[self.songDic valueForKey:@"songinfo"];
@@ -750,20 +807,6 @@
     });
 }
 
-/*
-获取文件路径
-*/
--(NSString *)getLocalFilePath{
-    
-    NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *path=[arr objectAtIndex:0];
-    //  NSString *filepath=[path stringByAppendingPathComponent:_selectedPlaylistCellModel.playUrl32];
-    NSDictionary *songInfo=[self.songDic valueForKey:@"songinfo"];
-//    NSString *lrcStr=[songInfo valueForKey:@"lrclink"];
-    NSString *filepath=[NSString stringWithFormat:@"%@/%@-%@.lrc",path,[songInfo valueForKey:@"author"],[songInfo valueForKey:@"title"]];
-//    NSLog(@"%@",filepath);
-    return filepath;
-}
 
 /*
  专辑图片旋转动画
@@ -793,7 +836,7 @@
  左右滑动响应
  */
 - (IBAction)swipe:(UISwipeGestureRecognizer *)sender {
-    NSLog(@"swipe");
+//    NSLog(@"swipe");
     if (sender.direction==UISwipeGestureRecognizerDirectionLeft) {//左滑
         if (self.pageNum<1) {
             self.pageNum++;
@@ -938,5 +981,90 @@
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
 //    NSLog(@"end 手动滚动");
     self.isLrcTableScrolling=NO;
+}
+
+/*
+ 获取播放历史plist路径
+ */
+-(NSString *)getLocalPlayHistoryPlistPath{
+    NSFileManager *manager=[NSFileManager defaultManager];
+    NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *path=[arr objectAtIndex:0];
+    NSString *dirPath=[path stringByAppendingPathComponent:@"/playHistoryList.plist"];
+    if (![manager fileExistsAtPath:dirPath]) {
+        NSMutableArray *imageDic=[[NSMutableArray alloc]init];
+        [imageDic writeToFile:dirPath atomically:YES];
+    }
+//        NSLog(@"%@",dirPath);
+    return dirPath;
+}
+///*
+// 获取下载文件夹路径
+// */
+//-(NSString *)getLocalDownloadDir{
+//    NSFileManager *manager=[NSFileManager defaultManager];
+//    NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//    NSString *path=[arr objectAtIndex:0];
+//    NSString *dirPath=[path stringByAppendingPathComponent:@"/Download"];
+//    if (![manager fileExistsAtPath:dirPath]) {
+//        [manager createDirectoryAtPath:dirPath withIntermediateDirectories:NO attributes:nil error:nil];
+//    }
+////    NSLog(@"%@",dirPath);
+//    return dirPath;
+//}
+///*
+// 获取下载列表路径
+// */
+//-(NSString *)getLocalDownloadHistoryPlistPath{
+//    NSFileManager *manager=[NSFileManager defaultManager];
+//    NSArray *arr=NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//    NSString *path=[arr objectAtIndex:0];
+//    NSString *dirPath=[path stringByAppendingPathComponent:@"/Download/downloadList.plist"];
+//    if (![manager fileExistsAtPath:dirPath]) {
+//        NSMutableArray *downloadDic=[[NSMutableArray alloc]init];
+//        [downloadDic writeToFile:dirPath atomically:YES];
+//    }
+////    NSLog(@"%@",dirPath);
+//    return dirPath;
+//}
+-(void)addAlertView{
+    UIAlertView *misNet=[[UIAlertView alloc]initWithTitle:@"网络不可用" message:@"去设置网络吧" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [misNet show];
+}
+- (IBAction)downloadSong:(UIButton *)sender {
+
+    if ([Netaccess isWanAccess]||[Netaccess isWifiAccess]) {
+        if (self.playerItem) {
+            [sender setTitle:@"下载中" forState:UIControlStateNormal];
+            sender.enabled=NO;
+            [JsonNetwork downloadMp3With:self.playlistArr[self.currentNum] andSongdic:self.songDic block:^(NSDictionary *dic) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.downloadBtn setTitle:@"已下载" forState:UIControlStateNormal];
+                    UIAlertView *misNet=[[UIAlertView alloc]initWithTitle:@"下载完成" message:@"可以本地播放咯" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+                    [misNet show];
+                });
+            }];
+        }
+    }else{
+        [self addAlertView];
+    }
+    
+    
+}
+-(BOOL)isLocalFile:(int)index{
+    NSString *filename;
+    if ([[self.playlistArr[index] valueForKey:@"songid"] length]>0) {//
+        filename=[NSString stringWithFormat:@"/%@.plist",[self.playlistArr[index] valueForKey:@"songid"]];
+    }else{
+        filename=[NSString stringWithFormat:@"%@/%@.plist",[JsonNetwork getLocalDownloadDir],[self.playlistArr[index] valueForKey:@"song_id"]];
+    }
+//    NSLog(@"%@",filename);
+    
+    if ([NSData dataWithContentsOfFile:filename]) {
+        //本地
+        return YES;
+    }else{
+        return NO;
+    }
 }
 @end

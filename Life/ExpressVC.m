@@ -43,15 +43,22 @@
 - (IBAction)search:(UIButton*)sender {
     [self.deliveryTextfield resignFirstResponder];
     NSString *urlStrl=[NSString stringWithFormat:@"http://q.kdpt.net/api?id=testkey&com=auto&nu=%@&show=json&order=desc",self.deliveryTextfield.text];
-    NSURL *url=[NSURL URLWithString:urlStrl];
-    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod=@"POST";
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-        NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self addTextView:dic];
-            
-        });
+//    NSURL *url=[NSURL URLWithString:urlStrl];
+//    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
+//    request.HTTPMethod=@"POST";
+//    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+//        NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self addTextView:dic];
+//            
+//        });
+//    }];
+    [JsonNetwork searchDeliveryWithUrlstr:urlStrl block:^(NSDictionary *dic) {
+        if (dic) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                            [self addTextView:dic];
+                        });
+        }
     }];
 }
 //删除webview，文本视图

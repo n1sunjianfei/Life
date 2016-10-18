@@ -42,7 +42,10 @@
 
 #pragma mark-click SEG
 -(void)clickButton:(UIButton *)sender{
-    //
+    if (![Netaccess isWifiAccess]&&![Netaccess isWanAccess]) {
+        [self addAlertView];
+    }else{
+
     [self.loading begin];
     //搜索相关标题
     NSLog(@"新闻分类标题%@",[self.buttonTitleArr objectAtIndex:sender.tag]);
@@ -53,17 +56,33 @@
     NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod=@"POST";
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue new] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-       // NSLog(@"%@",data);
+        NSLog(@"%@",data);
         if (data) {
+            
             NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            //"error_code": 223501
+            if ([[dic valueForKey:@"error_code"] intValue]!=0) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.loading stop];
+                    [[[UIAlertView alloc]initWithTitle:@"加载异常" message:@"服务器好像出问题了，请稍后请求吧..." delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
+                });
+                
+            }else{
+                
             NSDictionary *result=[dic valueForKey:@"result"];
-            self.dataSource=[result valueForKey:@"data"];
-            [self performSelectorOnMainThread:@selector(reloadTableView) withObject:nil waitUntilDone:YES];
+                self.dataSource=[result valueForKey:@"data"];
+                [self performSelectorOnMainThread:@selector(reloadTableView) withObject:nil waitUntilDone:YES];
+            }
         }else{
-            NSLog(@"网络不可用好像...");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.loading stop];
+                [[[UIAlertView alloc]initWithTitle:@"加载异常" message:@"服务器好像出问题了，请稍后请求吧..." delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
+            });
+
         }
-      
     }];
+    }
 }
 -(void)reloadTableView{
     [self.mainTableView reloadData];
